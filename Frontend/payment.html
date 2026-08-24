@@ -114,7 +114,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>Payment Gateway</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <button class="nav-back-btn" type="button" onclick="window.history.back()" title="Go Back"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <h1 style="margin: 0; font-size: 22px;">Payment Gateway</h1>
+        </div>
         <form action="/process-payment" method="POST">
             <div class="payment-methods">
                 <h2>Select Payment Method</h2>

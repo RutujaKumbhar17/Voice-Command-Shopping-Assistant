@@ -12,6 +12,33 @@
     --ai-pulse: rgba(16, 185, 129, 0.4);
 }
 
+/* Navigation Back Button */
+.nav-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: #f1f5f9;
+    color: #1e293b;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    line-height: 1.2;
+    margin-right: 8px;
+}
+
+.nav-back-btn:hover {
+    background: #10b981;
+    color: #ffffff;
+    border-color: #10b981;
+    transform: translateX(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
 /* Floating Action Button */
 .floating-ai-btn {
     position: fixed;

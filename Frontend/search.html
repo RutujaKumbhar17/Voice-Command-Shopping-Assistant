@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshRoot - Search Produce</title>
+    <script src="https://kit.fontawesome.com/d9f55f49c0.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="voice_widget.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .search-header {
+            background: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 2px solid #10b981;
+            border-radius: 14px;
+            padding: 10px 18px;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 16px;
+            color: #1e293b;
+            padding-left: 10px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .item-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            border-color: #10b981;
+        }
+
+        .item-card img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .item-title {
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 16px;
+        }
+
+        .item-price {
+            color: #107d09;
+            font-weight: 700;
+            font-size: 15px;
+            margin: 6px 0 12px;
+        }
+
+        .add-cart-btn {
+            background: #107d09;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .add-cart-btn:hover {
+            background: #0b5e07;
+        }
+    </style>
+</head>
+<body>
+    <header class="search-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <button class="nav-back-btn" onclick="window.history.back()" title="Go Back"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <a href="home.html" style="text-decoration: none; font-size: 20px; font-weight: 700; color: #10b981; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-leaf"></i> FreshRoot</a>
+        </div>
+        <a href="cart.html" style="text-decoration: none; color: #0f172a; font-size: 20px;"><i class="fa-solid fa-cart-shopping"></i></a>
+    </header>
+
+    <div class="search-container">
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass" style="color: #10b981; font-size: 18px;"></i>
+            <input type="text" id="searchInput" placeholder="Search fresh fruits, vegetables, grains (e.g. Potato, Banana, Apple)..." autofocus>
+        </div>
+
+        <div id="resultsGrid" class="results-grid"></div>
+    </div>
+
+    <script>
+        const produceList = [
+            { id: 1, name: "Potato", price: 30, unit: "kg", image: "potato.jpg", cat: "Vegetables" },
+            { id: 2, name: "Tomato", price: 40, unit: "kg", image: "tomato.jpg", cat: "Vegetables" },
+            { id: 3, name: "Bananas", price: 30, unit: "kg", image: "banana.jpg", cat: "Fruits" },
+            { id: 4, name: "Apple", price: 100, unit: "kg", image: "apple.jpg", cat: "Fruits" },
+            { id: 5, name: "Carrot", price: 50, unit: "kg", image: "carrot.jpg", cat: "Vegetables" },
+            { id: 6, name: "Onion", price: 35, unit: "kg", image: "onion.jpg", cat: "Vegetables" },
+            { id: 7, name: "Mango", price: 120, unit: "kg", image: "mango.jpg", cat: "Fruits" },
+            { id: 8, name: "Grapes", price: 80, unit: "kg", image: "grapes.jpg", cat: "Fruits" },
+            { id: 9, name: "Rice", price: 60, unit: "kg", image: "rice.jpg", cat: "Grains" },
+            { id: 10, name: "Wheat", price: 45, unit: "kg", image: "wheat.jpg", cat: "Grains" },
+            { id: 11, name: "Maize", price: 40, unit: "kg", image: "maize.jpg", cat: "Grains" },
+            { id: 12, name: "Coconut", price: 50, unit: "piece", image: "coconut.jpg", cat: "Fruits" },
+            { id: 13, name: "Custard Apple", price: 90, unit: "kg", image: "custard_apple.jpg", cat: "Fruits" },
+            { id: 14, name: "Cabbage", price: 35, unit: "kg", image: "cabbage.jpg", cat: "Vegetables" },
+            { id: 15, name: "Strawberry", price: 150, unit: "box", image: "strawberry.jpg", cat: "Fruits" },
+            { id: 16, name: "Orange", price: 70, unit: "kg", image: "orange.jpg", cat: "Fruits" },
+            { id: 17, name: "Sugarcane", price: 30, unit: "piece", image: "sugarcane.jpg", cat: "Grains" }
+        ];
+
+        function renderResults(query = '') {
+            const container = document.getElementById('resultsGrid');
+            const q = query.toLowerCase().trim();
+            const filtered = produceList.filter(p => p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px 0; font-size: 15px;">No produce found matching "<strong>${query}</strong>". Try searching for Apples, Potatoes, Bananas, Mango, or Tomatoes.</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(p => `
+                <div class="item-card">
+                    <img src="./image/${p.image}" onerror="this.src='./image/capsicum.jpg'" alt="${p.name}">
+                    <div class="item-title">${p.name}</div>
+                    <div class="item-price">₹${p.price} / ${p.unit}</div>
+                    <button class="add-cart-btn" onclick="addToCartAndNotify(${p.id}, '${p.name}')">Add to Cart</button>
+                </div>
+            `).join('');
+        }
+
+        function addToCartAndNotify(id, name) {
+            if (typeof window.FreshRootVoice !== 'undefined' && typeof window.FreshRootVoice.addToCartDirect === 'function') {
+                window.FreshRootVoice.addToCartDirect(id);
+            }
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialQuery = urlParams.get('q') || '';
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = initialQuery;
+            searchInput.addEventListener('input', (e) => renderResults(e.target.value));
+        }
+        renderResults(initialQuery);
+    </script>
+
+    <!-- Floating Voice Assistant Action Button -->
+    <button class="floating-ai-btn" onclick="FreshRootVoice.activate()" title="Activate AI Voice Assistant">
+        <i class="fa-solid fa-robot"></i>
+    </button>
+
+    <script src="voice_widget.js"></script>
+</body>
+</html>

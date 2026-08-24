@@ -535,8 +535,32 @@
                     } catch (e) {}
                 }
 
-                // Prominently display Cart Price Card in Chat when cart is checked or items added
-                if (data.intent === 'get_cart_total' || data.intent === 'view_cart') {
+                // 1. Add Item: Automatic addition already completed on backend
+                if (data.intent === 'add_item') {
+                    // Instantly sync UI
+                    refreshCartBadge();
+                    if (typeof window.loadCart === 'function') window.loadCart();
+                    window.dispatchEvent(new CustomEvent('cartUpdated', { detail: data.cart }));
+
+                    if (data.matched_products && data.matched_products.length > 0) {
+                        const p = data.matched_products[0];
+                        extraHtml += `
+                            <div class="ai-cart-summary-card" style="border-left: 4px solid #10b981; margin-top: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: #10b981; font-weight: 700;"><i class="fa-solid fa-circle-check"></i> Automatically Added to Cart</span>
+                                    <strong style="color: #f8fafc;">₹${p.product_price}/kg</strong>
+                                </div>
+                                <div style="font-size: 13px; color: #cbd5e1; margin: 5px 0 8px;">
+                                    ${p.product_title || p.product_type} has been added directly to your cart.
+                                </div>
+                                <a href="cart.html" class="ai-view-cart-link">View Cart & Checkout →</a>
+                            </div>
+                        `;
+                    }
+                }
+
+                // 2. View Cart Total
+                else if (data.intent === 'get_cart_total' || data.intent === 'view_cart') {
                     const cart = data.cart || [];
                     const total = cart.reduce((sum, item) => sum + (item.subtotal || 0), 0);
 
@@ -556,8 +580,8 @@
                     }
                 }
 
-                // If matched products returned, render interactive product cards
-                if (data.matched_products && data.matched_products.length > 0 && data.intent !== 'get_cart_total' && data.intent !== 'view_cart') {
+                // 3. Search Discovery (Render cards with Add button only on search/browse)
+                else if (data.intent === 'search_item' && data.matched_products && data.matched_products.length > 0) {
                     extraHtml += '<div style="margin-top:8px;">';
                     data.matched_products.slice(0, 3).forEach(p => {
                         extraHtml += `
@@ -598,6 +622,7 @@
                 if (typeof window.loadCart === 'function') {
                     window.loadCart();
                 }
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
                 if (typeof window.updateCartBadge === 'function') {
                     window.updateCartBadge();
                 }
@@ -689,6 +714,11 @@
 
     // Auto-bind robot buttons on page load
     function initButtons() {
+        const currentPath = (window.location.pathname || '').toLowerCase();
+        if (currentPath.includes('login') || currentPath.includes('signup')) {
+            return; // Completely disable voice assistant and popup on login/signup pages
+        }
+
         injectWidgetDOM();
         refreshCartBadge();
 

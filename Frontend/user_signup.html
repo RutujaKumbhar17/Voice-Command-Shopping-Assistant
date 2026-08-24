@@ -143,10 +143,10 @@
             text-decoration: underline;
         }
     </style>
-    <link rel="stylesheet" href="voice_widget.css">
 </head>
 
 <body>
+    <button class="nav-back-btn" onclick="window.history.back()" title="Go Back" style="position: absolute; top: 25px; left: 25px; z-index: 100;"><i class="fa-solid fa-arrow-left"></i> Back</button>
     <div class="form-box">
         <h1>Sign Up</h1>
         <form id="signupform" action="home.html" method="GET">
@@ -184,6 +184,5 @@
             document.getElementById('signupform').reset();
         }
     </script>
-    <script src="voice_widget.js"></script>
 </body>
 </html>
