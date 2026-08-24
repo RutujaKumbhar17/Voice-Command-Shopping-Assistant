@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Arrivals</title>
+    <link rel="stylesheet" href="style_na.css">
+</head>
+<body>
+    <div class="form-container">
+        <!-- Top Title Section -->
+        <div class="form-header">
+            <h2>Insert Your New Product <span>🌱</span></h2>
+        </div>
+        
+        <!-- Form Section -->
+        <form action="submit_product.php" method="POST" enctype="multipart/form-data">
+            <label for="title">Product Title:</label>
+            <input type="text" id="title" name="title" placeholder="Enter Product title" required>
+
+            <label for="stock">Product Stock (in kg):</label>
+            <input type="number" id="stock" name="stock" placeholder="Enter Product Stock" required>
+
+            <label for="category">Product Categories:</label>
+            <select id="category" name="category" required>
+                <option value="" disabled selected>Select a Category</option>
+                <option value="vegetables">Vegetables</option>
+                <option value="fruits">Fruits</option>
+                <option value="dairy">Dairy</option>
+            </select>
+
+            <label for="type">Product Type:</label>
+            <input type="text" id="type" name="type" placeholder="Example: Potato" required>
+
+            <label for="expiry">Product Expiry:</label>
+            <input type="date" id="expiry" name="expiry" required>
+
+            <label for="image">Product Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+
+            <label for="price">Product MRP (Per kg):</label>
+            <input type="text" id="price" name="price" placeholder="Enter Product Price" required>
+
+            <label for="description">Product Description:</label>
+            <textarea id="description" name="description" placeholder="Enter Product Description" rows="4" required></textarea>
+
+            <label for="keywords">Product Keywords:</label>
+            <input type="text" id="keywords" name="keywords" placeholder="Example: Best potatoes" required>
+
+            <label for="delivery">Delivery:</label>
+            <select id="delivery" name="delivery" required>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+
+            <button type="submit">Insert</button>
+        </form>
+    </div>
+</body>
+</html>

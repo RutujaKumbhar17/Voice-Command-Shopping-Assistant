@@ -1,0 +1,39 @@
+# Environment variables & secrets
+.env
+.env.local
+.env.*
+!.env.example
+
+# Python cache & virtual environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Database & Runtime Data
+farmpure.db-journal
+farmpure.db-wal
+*.log
+
+# Audio cache & media outputs
+Frontend/audio_cache/*
+!Frontend/audio_cache/.gitkeep
+*.mp3
+*.wav
+scratch/
+
+# Trained model artifacts & checkpoints (large binary files)
+fruit_freshness_model.h5

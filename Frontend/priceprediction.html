@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FarmPure</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0; 
+            padding: 0;
+            background-image: url('C:\Users\user\Desktop\background of pp.jpeg'); 
+            background-size: cover; 
+            background-repeat: no-repeat; 
+            background-attachment: fixed; 
+        }
+
+        h2 {
+            text-align: center;
+            color: #4daf4a;
+        }
+
+        #plot {
+            width: 800px; 
+            margin: 0 auto; 
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h2>FARMPURE'S</h2>
+    <h3 align="center">Crop Price Comparison</h3>
+
+    <div id="plot"></div>
+
+    <script>
+
+        var data = [
+            {
+                x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'], // Months
+                y: [100, 120, 90, 110, 130, 150, 120, 140, 110, 170, 180, 160],
+                name: 'Farmer\'s Price',
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#377eb8' }, // Blue
+                marker: { color: '#377eb8' }
+            },
+            {
+                x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+                y: [110, 130, 100, 120, 140, 160, 120, 150, 100, 180, 190, 130],
+                name: 'Actual Buyer\'s Price',
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#e41a1c' }, // Red
+                marker: { color: '#e41a1c' }
+            },
+            {
+                x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+                y: [115, 125, 105, 115, 135, 155, 135, 145, 95, 180, 185, 145],
+                name: 'AI-Predicted Optimal Price',
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#4daf4a' }, // Green
+                marker: { color: '#4daf4a' }
+            }
+        ];
+
+        var layout = {
+            title: 'Crop Price Comparison',
+            xaxis: {
+                title: 'Month'
+            },
+            yaxis: {
+                title: 'Price (per unit)'
+            },
+            plot_bgcolor: '#f0f0f0', // Match background color
+            paper_bgcolor: '#fff' // White background for the plot area
+        };
+
+        Plotly.newPlot('plot', data, layout);
+    </script>
+
+</body>
+</html>

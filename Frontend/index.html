@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmPure</title>
+    <style>
+
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box; 
+    }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('./image/background1.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            background-attachment: fixed; 
+            color: white; 
+            font-size: 18px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center; 
+            flex-direction: column;
+            height: 100vh; 
+            overflow: hidden;
+        }
+
+        /* Header Section */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #6a4a3c;
+            color: white;
+            width: 100%;
+            position: fixed; 
+            top: 0;
+            z-index: 10; /*header stays on top */
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 36px; 
+            color: white;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .buttons a {
+            text-decoration: none;
+            padding: 12px 20px;
+            background-color: white;
+            color: #6a4a3c;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .buttons a:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Main Content */
+        .content {
+            text-align: center;
+            padding: 60px 20px;
+            width: 100%;
+            max-width: 100%; /* Prevent overflow */
+            margin-top: 80px; /* Space for fixed header */
+        }
+
+        .dynamic-text {
+            color: white;
+            font-size: 28px;
+            font-style: italic;
+            margin-top: 20px;
+            height: 30px; 
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .content p {
+            max-width: 900px;
+            margin: 30px auto;
+            line-height: 1.6;
+            color: white;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>FreshRoot</h1>
+        <div class="buttons">
+            <a href="voice_assistant.html" style="background-color: #10b981; color: white;" title="AI Voice Shopping Assistant"><i class="fa-solid fa-microphone"></i> AI Voice Assistant</a>
+            <a href="login_signup.html" title="Login Page">Login</a>
+            <a href="login_signup.html" title="Sign Up Page">Sign Up</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h1>WELCOME TO FreshRoot</h1>
+        <div class="dynamic-text" id="dynamicText"></div> 
+
+        <p>Welcome to FreshRoot, your trusted farm-to-kitchen service that brings the freshest, most natural produce
+            straight to your doorstep. At FreshRoot, we work directly with local farmers to deliver handpicked fruits,
+            vegetables, and groceries that are grown with care and sustainability. Our mission is to provide you with
+            nutritious, farm-fresh products while supporting local agriculture and reducing environmental impact.
+            Experience the purity of fresh, wholesome food that goes from farm to your kitchen, effortlessly and
+            conveniently, with FreshRoot.</p>
+    </div>
+
+    <script>
+        const dynamicText = [
+            "Fresh from the farm, to your home!",
+            "Supporting local farmers sustainably.",
+            "Wholesome food for your family.",
+            "Bringing nature closer to your kitchen.",
+        ];
+        let index = 0;
+
+        function updateDynamicText() {
+            const textElement = document.getElementById("dynamicText");
+            textElement.textContent = dynamicText[index];
+            index = (index + 1) % dynamicText.length; // Loop through the array
+        }
+
+        // Initial call and interval for updating text
+        updateDynamicText();
+        setInterval(updateDynamicText, 1500); // Change text every 1.5 seconds
+    </script>
+</body>
+
+</html>

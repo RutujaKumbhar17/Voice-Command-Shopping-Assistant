@@ -1,0 +1,11 @@
+Product Category,Supply Quantity (Tons),Demand (Number of Buyers),Season,Competitor Price (₹),Actual Price (₹),Predicted Optimal Price (₹)
+Grains,29,2369,Summer,73,93,88.2067416896396
+Vegetables,11,2456,Winter,54,54,52.3551892265249
+Grains,12,1349,Summer,78,73,80.30610812643606
+Vegetables,15,1334,Summer,87,98,95.4871501839241
+Vegetables,38,1907,Spring,53,56,59.48510159930498
+Fruits,14,1306,Spring,89,100,98.56713506152171
+Fruits,34,2234,Winter,70,84,86.74198212678705
+Grains,25,1171,Spring,85,99,96.94776333917348
+Vegetables,43,645,Winter,32,24,21.83850455950808
+Grains,43,1680,Winter,77,97,98.06432408718014

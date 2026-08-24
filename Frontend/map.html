@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realtime location tracker</title>
+    <!-- leaflet css  -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            width: 100%;
+            height: 90vh; /* Adjusted to leave space for input fields */
+        }
+        #inputs {
+            margin: 10px;
+            text-align: center;
+        }
+        input {
+            padding: 5px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="inputs">
+        <input type="text" id="drop-lat" placeholder="Drop Latitude">
+        <input type="text" id="drop-long" placeholder="Drop Longitude">
+        <button onclick="setDropLocation()">Set Drop Location</button>
+    </div>
+    <!-- leaflet js  -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Map initialization 
+        var map = L.map('map').setView([20.5937, 78.9629], 5); // Centered over India
+
+        // OSM layer
+        var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        });
+        osm.addTo(map);
+
+        // Variable initialization for pickup and drop markers
+        var pickupMarker, dropMarker, circle;
+
+        if (!navigator.geolocation) {
+            console.log("Your browser doesn't support geolocation feature!")
+        } else {
+            navigator.geolocation.getCurrentPosition(getPickupPosition);
+        }
+
+        function getPickupPosition(position) {
+            var lat = position.coords.latitude;
+            var long = position.coords.longitude;
+            var accuracy = position.coords.accuracy;
+
+            if (pickupMarker) {
+                map.removeLayer(pickupMarker);
+            }
+
+            if (circle) {
+                map.removeLayer(circle);
+            }
+
+            pickupMarker = L.marker([lat, long]).addTo(map).bindPopup("Pickup Location").openPopup();
+            circle = L.circle([lat, long], { radius: accuracy }).addTo(map);
+
+            var featureGroup = L.featureGroup([pickupMarker, circle]).addTo(map);
+            map.fitBounds(featureGroup.getBounds());
+
+            console.log("Your coordinate is: Lat: " + lat + " Long: " + long + " Accuracy: " + accuracy);
+        }
+
+        function setDropLocation() {
+            var lat = document.getElementById('drop-lat').value;
+            var long = document.getElementById('drop-long').value;
+
+            if (lat && long) {
+                lat = parseFloat(lat);
+                long = parseFloat(long);
+
+                if (dropMarker) {
+                    map.removeLayer(dropMarker);
+                }
+
+                dropMarker = L.marker([lat, long]).addTo(map).bindPopup("Drop Location").openPopup();
+
+                var featureGroup = L.featureGroup([pickupMarker, dropMarker]).addTo(map);
+                map.fitBounds(featureGroup.getBounds());
+            } else {
+                alert("Please enter valid coordinates for the drop location.");
+            }
+        }
+    </script>
+</body>
+</html>

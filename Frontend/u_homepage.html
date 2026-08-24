@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshRoot - User AI Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #107d09;
+            --primary-hover: #0b5e07;
+            --primary-light: #e6f4e6;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --accent-gold: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* Header Navigation */
+        #header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 40px;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-container img {
+            height: 42px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            list-style: none;
+        }
+
+        .nav-icon-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 18px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .nav-icon-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .ai-mic-nav-btn {
+            background: linear-gradient(135deg, #107d09, #059669);
+            color: white !important;
+            border: none;
+            box-shadow: 0 4px 12px rgba(16, 125, 9, 0.3);
+        }
+
+        .ai-mic-nav-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Hero Banner with Embedded AI Voice Control */
+        .hero-banner {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 40px 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (max-width: 900px) {
+            .hero-banner {
+                grid-template-columns: 1fr;
+                padding: 30px 20px;
+            }
+        }
+
+        .hero-text h1 {
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+
+        .hero-text h1 span {
+            color: #34d399;
+        }
+
+        .hero-text p {
+            font-size: 16px;
+            color: #94a3b8;
+            margin-bottom: 24px;
+        }
+
+        /* AI Voice Control Card in Hero */
+        .hero-ai-card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-ai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .hero-ai-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #34d399;
+        }
+
+        .hero-mic-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #107d09, #059669);
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+            box-shadow: 0 0 20px rgba(16, 125, 9, 0.5);
+            transition: all 0.3s;
+        }
+
+        .hero-mic-btn.listening {
+            animation: pulse-red 1.5s infinite;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.7);
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .hero-transcript {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 14px;
+            color: #e2e8f0;
+            min-height: 50px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .hero-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .hero-chip {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hero-chip:hover {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+            border-color: #34d399;
+        }
+
+        /* Products Section */
+        .section-container {
+            max-width: 1240px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-title-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .discount-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .product-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 10px 0;
+        }
+
+        .product-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .product-card select {
+            width: 80%;
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            background: #f8fafc;
+            cursor: pointer;
+        }
+
+        .product-card .price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .product-card .original-price {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            margin-left: 6px;
+        }
+
+        .add-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .add-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Smart Suggestions & Price Predictor */
+        .grid-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .sugg-box-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .sugg-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .sugg-tag {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .tag-rec { background: #dbeafe; color: #1d4ed8; }
+        .tag-sea { background: #fef3c7; color: #b45309; }
+        .tag-sub { background: #f3e8ff; color: #6b21a8; }
+
+        /* Floating AI Mic Button (Bottom Right) */
+        .floating-ai-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #107d09, #059669);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(16, 125, 9, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: transform 0.2s;
+        }
+
+        .floating-ai-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: #ffffff;
+            border-top: 1px solid var(--border);
+            margin-top: 50px;
+        }
+
+        footer p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header id="header">
+        <a href="home.html" class="logo-container">
+            <img src="./image/logo1.png" alt="FreshRoot Logo" onerror="this.style.display='none'">
+            <span class="logo-text"><i class="fa-solid fa-leaf"></i> FreshRoot</span>
+        </a>
+        <nav id="navbar">
+            <ul class="nav-links">
+                <li><a class="active" href="home.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="categories.html">Categories</a></li>
+                <li><a href="voice_assistant.html">AI Voice Assistant</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="review.html">Review</a></li>
+            </ul>
+        </nav>
+        <ul class="nav-icons">
+            <li>
+                <button class="nav-icon-btn ai-mic-nav-btn" title="AI Voice Assistant" onclick="toggleHeroMic()">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+            </li>
+            <li><a href="search.html" class="nav-icon-btn"><i class="fa-solid fa-magnifying-glass"></i></a></li>
+            <li><a href="cart.html" class="nav-icon-btn"><i class="fa-solid fa-cart-shopping"></i><span class="cart-badge" id="cartCountBadge">0</span></a></li>
+            <li><a href="u_profile.html" class="nav-icon-btn"><i class="fa-solid fa-user"></i></a></li>
+        </ul>
+    </header>
+
+    <!-- Hero Banner with Embedded AI Voice Controller -->
+    <section class="hero-banner">
+        <div class="hero-text">
+            <h1>Fastest Delivery & <span>Farm Fresh</span> Organic Produce</h1>
+            <p>Order fruits, vegetables, and farm staples directly from local farmers using voice commands powered by MiniMax AI.</p>
+            <div style="display: flex; gap: 12px;">
+                <a href="voice_assistant.html" class="add-btn" style="text-decoration: none; display: inline-block; width: auto; padding: 12px 24px;">
+                    <i class="fa-solid fa-robot"></i> Open Full AI Assistant
+                </a>
+                <a href="products.html" style="text-decoration: none; padding: 12px 24px; background: rgba(255,255,255,0.1); color: white; border-radius: 10px; font-weight: 600;">
+                    Browse Catalog
+                </a>
+            </div>
+        </div>
+
+        <!-- Right Side: Interactive AI Voice Widget -->
+        <div class="hero-ai-card">
+            <div class="hero-ai-header">
+                <div class="hero-ai-title">
+                    <i class="fa-solid fa-sparkles"></i> MiniMax AI Voice Engine
+                </div>
+                <select id="heroLangSelect" style="background: rgba(0,0,0,0.4); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 6px; font-size: 12px;">
+                    <option value="en-US">English (US)</option>
+                    <option value="hi-IN">Hindi (हिंदी)</option>
+                    <option value="mr-IN">Marathi (मराठी)</option>
+                    <option value="es-ES">Spanish</option>
+                    <option value="fr-FR">French</option>
+                </select>
+            </div>
+
+            <button id="heroMicBtn" class="hero-mic-btn" onclick="toggleHeroMic()">
+                <i class="fa-solid fa-microphone"></i>
+            </button>
+
+            <div id="heroStatusText" style="text-align: center; font-size: 13px; color: #34d399; margin-bottom: 10px;">
+                Tap mic to add items or search produce by voice
+            </div>
+
+            <div class="hero-transcript" id="heroTranscript">
+                "Add 2 kg carrots" or "Find chillies under 50"...
+            </div>
+
+            <div class="hero-chips">
+                <div class="hero-chip" onclick="simulateHeroVoice('Add 2 kg carrots')">"Add 2 kg carrots"</div>
+                <div class="hero-chip" onclick="simulateHeroVoice('Find chillies under 50')">"Chillies under ₹50"</div>
+                <div class="hero-chip" onclick="simulateHeroVoice('Suggest seasonal fruits')">"Seasonal recommendations"</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Products Showcase -->
+    <section class="section-container">
+        <div class="section-title-box">
+            <div class="section-title">
+                <i class="fa-solid fa-store"></i> Farm Fresh Products
+            </div>
+            <a href="products.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">View All Products <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <div class="product-grid" id="homepageProductsGrid">
+            <!-- Dynamic products loaded here -->
+        </div>
+    </section>
+
+    <!-- AI Suggestions & ML Price Predictor Section -->
+    <section class="section-container">
+        <div class="grid-two-col">
+            <!-- AI Recommendations Card -->
+            <div class="info-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-size: 20px; font-weight: 700; color: var(--primary);">
+                        <i class="fa-solid fa-lightbulb" style="color: var(--accent-gold);"></i> AI Smart Recommendations
+                    </h3>
+                    <button onclick="loadSuggestions()" style="background: none; border: none; color: var(--primary); cursor: pointer;"><i class="fa-solid fa-rotate"></i></button>
+                </div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Powered by MiniMax AI reasoning</p>
+
+                <div class="sugg-box-list" id="homeSuggestionsList">
+                    <!-- Suggestions rendered dynamically -->
+                </div>
+            </div>
+
+            <!-- ML Price Predictor Card -->
+            <div class="info-card">
+                <h3 style="font-size: 20px; font-weight: 700; color: var(--primary);">
+                    <i class="fa-solid fa-chart-line"></i> Dynamic ML Price Predictor
+                </h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Trained Scikit-Learn Regression Model</p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                    <input type="number" id="homeCompPrice" placeholder="Comp Price (₹)" value="60" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
+                    <input type="number" id="homeSupply" placeholder="Supply (Tons)" value="25" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
+                    <input type="number" id="homeDemand" placeholder="Demand (Buyers)" value="1500" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
+                    <select id="homeSeason" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
+                        <option value="Summer">Summer</option>
+                        <option value="Winter">Winter</option>
+                        <option value="Spring">Spring</option>
+                        <option value="Autumn">Autumn</option>
+                    </select>
+                </div>
+                <button class="add-btn" style="margin-top: 12px;" onclick="calculateMlPrice()">Predict Market Price</button>
+                <div id="homeMlResult" style="margin-top: 10px; font-weight: 700; text-align: center; color: var(--primary);"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Mic Action Button -->
+    <button class="floating-ai-btn" onclick="window.location.href='voice_assistant.html'" title="Open AI Assistant">
+        <i class="fa-solid fa-robot"></i>
+    </button>
+
+    <!-- Hidden Audio Player for MiniMax Speech -->
+    <audio id="homeAudioPlayer" style="display: none;"></audio>
+
+    <footer>
+        <p>&copy; 2026 FreshRoot. All rights reserved. Powered by MiniMax AI.</p>
+        <div class="social-icons">
+            <a href="#" class="social-icon-btn"><i class="fa-brands fa-facebook"></i></a>
+            <a href="#" class="social-icon-btn"><i class="fa-brands fa-twitter"></i></a>
+            <a href="#" class="social-icon-btn"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+    </footer>
+
+    <script>
+        let heroListening = false;
+        let heroRecognition = null;
+
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            heroRecognition = new SpeechRecognition();
+            heroRecognition.continuous = false;
+            heroRecognition.interimResults = false;
+
+            heroRecognition.onstart = function() {
+                heroListening = true;
+                document.getElementById('heroMicBtn').classList.add('listening');
+                document.getElementById('heroStatusText').innerText = "Listening to your voice command...";
+            };
+
+            heroRecognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('heroTranscript').innerText = `"${transcript}"`;
+                sendHeroVoiceCommand(transcript);
+            };
+
+            heroRecognition.onerror = function() {
+                stopHeroListening();
+                document.getElementById('heroStatusText').innerText = "Speech not recognized. Try again.";
+            };
+
+            heroRecognition.onend = function() {
+                stopHeroListening();
+            };
+        }
+
+        function toggleHeroMic() {
+            if (!heroRecognition) {
+                alert("Web Speech API is not supported in this browser. You can click prompt chips or open the full assistant.");
+                return;
+            }
+            if (heroListening) {
+                heroRecognition.stop();
+            } else {
+                heroRecognition.lang = document.getElementById('heroLangSelect').value;
+                heroRecognition.start();
+            }
+        }
+
+        function stopHeroListening() {
+            heroListening = false;
+            document.getElementById('heroMicBtn').classList.remove('listening');
+        }
+
+        function simulateHeroVoice(text) {
+            document.getElementById('heroTranscript').innerText = `"${text}"`;
+            sendHeroVoiceCommand(text);
+        }
+
+        async function sendHeroVoiceCommand(transcript) {
+            document.getElementById('heroStatusText').innerText = "Processing with MiniMax AI...";
+
+            try {
+                const res = await fetch('/api/voice-command', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ transcript: transcript, language: document.getElementById('heroLangSelect').value })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('heroStatusText').innerText = data.response_speech;
+                    if (data.audio_b64) {
+                        playHomeAudio(data.audio_b64);
+                    }
+                    if (data.matched_products && data.matched_products.length > 0) {
+                        renderProductsGrid(data.matched_products);
+                    }
+                    updateCartBadge();
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('heroStatusText').innerText = "Failed to connect to backend AI server.";
+            }
+        }
+
+        function playHomeAudio(b64) {
+            const player = document.getElementById('homeAudioPlayer');
+            player.src = "data:audio/mp3;base64," + b64;
+            player.play();
+        }
+
+        async function renderProductsGrid(products) {
+            const grid = document.getElementById('homepageProductsGrid');
+            if (!products) {
+                const res = await fetch('/api/products');
+                const data = await res.json();
+                products = data.products;
+            }
+
+            let html = '';
+            products.forEach(p => {
+                const discPrice = Math.round(p.product_price * 0.85);
+                html += `
+                    <div class="product-card">
+                        <div class="discount-tag">15% OFF</div>
+                        <img src="./image/${p.product_image || 'capsicum.jpg'}" onerror="this.src='./image/background1.jpg'" alt="${p.product_title}">
+                        <h4>${p.product_title}</h4>
+                        <select id="qty_${p.product_id}">
+                            <option value="1">1 kg</option>
+                            <option value="2">2 kg</option>
+                            <option value="3">3 kg</option>
+                        </select>
+                        <div class="price">₹${p.product_price} <span class="original-price">₹${Math.round(p.product_price * 1.4)}</span></div>
+                        <button class="add-btn" onclick="addToCartDirect(${p.product_id})">Add to cart</button>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        async function addToCartDirect(productId) {
+            const qty = document.getElementById(`qty_${productId}`) ? document.getElementById(`qty_${productId}`).value : 1;
+            await fetch('/api/cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: productId, qty: parseInt(qty) })
+            });
+            updateCartBadge();
+            alert("Product added to cart!");
+        }
+
+        async function updateCartBadge() {
+            const res = await fetch('/api/cart');
+            const data = await res.json();
+            const count = data.cart ? data.cart.length : 0;
+            document.getElementById('cartCountBadge').innerText = count;
+        }
+
+        async function loadSuggestions() {
+            const res = await fetch('/api/suggestions');
+            const data = await res.json();
+            const sugg = data.suggestions;
+            const container = document.getElementById('homeSuggestionsList');
+            if (!sugg) return;
+
+            let html = '';
+            if (sugg.recommendations) {
+                sugg.recommendations.forEach(i => {
+                    html += `<div class="sugg-item"><div><strong>${i.name}</strong> <span class="sugg-tag tag-rec">Recommended</span></div><span style="color:var(--primary); font-weight:700;">₹${i.price}</span></div>`;
+                });
+            }
+            if (sugg.seasonal) {
+                sugg.seasonal.forEach(i => {
+                    html += `<div class="sugg-item"><div><strong>${i.name}</strong> <span class="sugg-tag tag-sea">Seasonal Pick</span></div><span style="color:var(--primary); font-weight:700;">₹${i.price}</span></div>`;
+                });
+            }
+            if (sugg.substitutes) {
+                sugg.substitutes.forEach(i => {
+                    html += `<div class="sugg-item"><div><strong>${i.name}</strong> <span class="sugg-tag tag-sub">Substitute</span></div><span style="color:var(--primary); font-weight:700;">₹${i.price}</span></div>`;
+                });
+            }
+            container.innerHTML = html;
+        }
+
+        async function calculateMlPrice() {
+            const comp = document.getElementById('homeCompPrice').value;
+            const supply = document.getElementById('homeSupply').value;
+            const demand = document.getElementById('homeDemand').value;
+            const season = document.getElementById('homeSeason').value;
+
+            const res = await fetch('/api/predict-price', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ competitor_price: comp, supply: supply, demand: demand, season: season })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('homeMlResult').innerText = `Optimal Market Price: ₹${data.predicted_price} / unit`;
+            }
+        }
+
+        window.onload = function() {
+            renderProductsGrid();
+            updateCartBadge();
+            loadSuggestions();
+        };
+    </script>
+</body>
+</html>

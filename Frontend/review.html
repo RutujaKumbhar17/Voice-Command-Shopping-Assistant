@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews</title>
+    <link rel="stylesheet" href="style_ur.css">
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Reviews<span>🌱</span></h2>
+        </div>
+        
+        <!-- Form Section -->
+        <form action="submit_product.php" method="POST" enctype="multipart/form-data">
+
+            <label for="keywords">Reviewer Name:</label>
+            <input type="text" id="keywords" name="keywords" placeholder="Example: Anuradha Tiwari" required>
+
+            <label for="category">Rating:</label>
+            <select id="category" name="category" required>
+                <option value="" disabled selected>Select</option>
+                <option value="">⭐⭐⭐⭐⭐</option>
+                <option value="">⭐⭐⭐⭐</option>
+                <option value="">⭐⭐⭐</option>
+                <option value="">⭐⭐</option>
+                <option value="">⭐</option>
+            </select>
+
+            <label for="category">Farmer Name:</label>
+            <select id="category" name="category" required>
+                <option value="" disabled selected>Select Farmer</option>
+                <option value="">Raghav Singh</option>
+                <option value="">Veerendra Yadav</option>
+                <option value="">Rajesh Kumar</option>
+                <option value="">Gurvinder Singh</option>
+                <option value="">Manoj Patel</option>
+                <option value="">Shivraj Choudhary</option>
+                <option value="">Prakash Reddy</option>
+                <option value="">Vikram Pandey</option>
+                <option value="">Ajay Rawat</option>
+                <option value="">Hari Prasad</option>
+                <option value="">Ramlal Choudhary</option>
+                <option value="">Ravindra Tiwari</option>
+                <option value="">Keshav Jadhav</option>
+                <option value="">Vinod Tripathi</option>
+            </select>
+
+            <label for="image">Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+
+            <label for="keywords">Product Keywords:</label>
+            <input type="text" id="keywords" name="keywords" placeholder="Example: Best potatoes" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" placeholder="Enter Description" rows="2" required></textarea>
+
+            <label for="expiry">Reviewed On:</label>
+            <input type="date" id="expiry" name="expiry" required>
+
+            <button type="submit">Add</button>
+        </form>
+    </div>
+</body>
+</html>

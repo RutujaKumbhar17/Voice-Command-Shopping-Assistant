@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories Page</title>
+    <link rel="stylesheet" href="style_c.css">
+    <script src="https://kit.fontawesome.com/d9f55f49c0.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <section id="header">
+        <a href="#"><img src="./image/logo1.png" class="logo" alt="Logo"></a>
+        <div id="navbar">
+            <ul class="nav-links">
+                <li><a class="active" href="home.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="categories.html">Categories</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="review.html">Review</a></li>
+            </ul>
+            <ul class="nav-icons">
+                <li><a href="search.html"><i class="fa-solid fa-magnifying-glass"></i></a></li>
+                <li><a href="map.html"><i class="fa-solid fa-location-dot"></i></a></li>
+                <li><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a></li>
+                <li><a href="u_profile.html"><i class="fa-solid fa-user"></i></a></li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="filters">
+        <h3>Filters</h3>
+        <form id="filter-form">
+            <div class="filter-group">
+                <label for="farmer-name">Farmer Name:</label>
+                <select id="farmer-name" name="farmer" required>
+                    <option value="" disabled selected>Select Farmer</option>
+                    <option value="">Raghav Singh</option>
+                    <option value="">Veerendra Yadav</option>
+                    <option value="">Rajesh Kumar</option>
+                    <option value="">Gurvinder Singh</option>
+                    <option value="">Manoj Patel</option>
+                    <option value="">Shivraj Choudhary</option>
+                    <option value="">Prakash Reddy</option>
+                    <option value="">Vikram Pandey</option>
+                    <option value="">Ajay Rawat</option>
+                    <option value="">Hari Prasad</option>
+                    <option value="">Ramlal Choudhary</option>
+                    <option value="">Ravindra Tiwari</option>
+                    <option value="">Keshav Jadhav</option>
+                    <option value="">Vinod Tripathi</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="product-category">Product Categories:</label>
+                <select id="product-category" name="category" required>
+                    <option value="" disabled selected>Select a Category</option>
+                    <option value="vegetables">Vegetables</option>
+                    <option value="fruits">Fruits</option>
+                    <option value="dairy">Dairy</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="price-range">Price Range:</label>
+                <select id="price-range">
+                    <option value="" disabled selected>Select</option>
+                    <option value="0-50">₹0 - ₹50</option>
+                    <option value="51-100">₹51 - ₹100</option>
+                    <option value="101-150">₹101 - ₹150</option>
+                    <option value="151-200">₹151 - ₹200</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="discount">Discount:</label>
+                <select id="discount">
+                    <option value="" disabled selected>Select</option>
+                    <option value="10">10% and above</option>
+                    <option value="20">20% and above</option>
+                    <option value="50">50% and above</option>
+                </select>
+            </div>
+
+            <div class="filter-buttons">
+                <button type="button" id="apply-filters">Apply</button>
+                <button type="reset" id="clear-filters">Clear</button>
+            </div>
+        </form>
+    </section>
+
+
+    <section id="product-container">
+        <div class="product-grid">
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/capsicum.jpg" alt="Capsicum">
+                <h4>Vikram Capsicum - Green</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/carrots.jpg" alt="carrots">
+                <h4>Ramlal Carrots</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/chillies.jpg" alt="Chillies">
+                <h4>Varun Chillies</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹40 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/onions.jpg" alt="Onions">
+                <h4>Ramlal Onions</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/leeche.jpg" alt="Leeche">
+                <h4>Karan Leeche</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/apples.jpg" alt="Apples">
+                <h4>Rajesh Apples</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/bananas.jpg" alt="Bananas">
+                <h4>Rajesh Bananas</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/oranges.jpg" alt="Oranges">
+                <h4>Karan Oranges</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/strawberries.jpg" alt="Strawberries">
+                <h4>Karan Strawberries</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/kiwi.jpg" alt="Kiwi">
+                <h4>Rajesh Kiwi</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/pineapple.jpg" alt="Pineapple">
+                <h4>Karan Pineapple</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/potatoes.jpg" alt="Potatoes">
+                <h4>Vikram Potatoes</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/coriander.jpg" alt="Coriander Leaves">
+                <h4>Vikram Coriander Leaves</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">46% OFF</div>
+                <img src="./image/ladies-finger.jpg" alt="Ladies' Fingers">
+                <h4>Ramlal Ladies' Fingers</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹60 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+
+            <div class="product-card">
+                <div class="discount-badge">61% OFF</div>
+                <img src="./image/beetroot.jpg" alt="Beetroot">
+                <h4>Varun Beetroot</h4>
+                <select>
+                    <option>1 kg</option>
+                    <option>2 kg</option>
+                    <option>3 kg</option>
+                    <option>4 kg</option>
+                    <option>5 kg</option>
+                    <option>6 kg</option>
+                    <option>7 kg</option>
+                    <option>8 kg</option>
+                    <option>9 kg</option>
+                    <option>10 kg</option>
+                </select>
+                <p class="price">₹43 <span class="original-price">₹110.96</span></p>
+                <button class="add-btn">Add to cart</button>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <p>&copy; FarmPure. All rights reserved.</p>
+        <div class="social-icons">
+            <a href="#"><i class="fa-brands fa-facebook"></i></a>
+            <a href="#"><i class="fa-brands fa-twitter"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+    </footer>
+    
+
+    <script src="script.js"></script>
+</body>
+
+</html>
