@@ -102,23 +102,23 @@ class Database:
         cursor.executemany("INSERT OR IGNORE INTO categories VALUES (?, ?)", categories_data)
 
         products_data = [
-            (1, 1, 'Ramlal Potato', '2', 'Potato', '2026-04-15', 'Potato.jpg', 1000, 12, 'Best Quality product guaranteed 100 percent', 'potato', 'yes'),
-            (3, 1, 'Ramlal Tomato', '2', 'Tomato', '2026-04-15', 'Tomato.jpg', 500, 15, 'Best Quality tomato assured', 'tomato, best quality tomato', 'no'),
-            (17, 3, 'Shivneri Bananas', '3', 'Bananas', '2026-04-15', 'Bananas.jpg', 250, 30, 'Best Quality Bananas', 'banana, shivneri', 'yes'),
-            (18, 3, 'Ram Rice', '1', 'Rice', '2026-04-15', 'Rice.jpg', 1500, 45, 'Premium aromatic Basmati rice', 'rice, best rice', 'yes'),
-            (19, 1, 'Ansh Carrot', '2', 'Carrot', '2026-04-15', 'Carrot.jpg', 1250, 56, 'Big fat juicy best quality carrots assured', 'carrot, best carrot', 'yes'),
-            (21, 1, 'Abhi Maize', '1', 'Maize', '2026-04-15', 'Maize.jpg', 750, 99, 'Seeds imported, grown naturally', 'maize, best maize', 'yes'),
-            (22, 3, 'Calista Coconut', '1', 'Coconut', '2026-04-15', 'Coconut.jpg', 450, 25, 'Fresh sweet coconuts', 'coconut, best coconut', 'no'),
-            (23, 1, 'Arpit Grapes', '3', 'Grapes', '2026-04-15', 'Green Grapes.jpg', 4560, 60, 'Best Grapes you will ever find', 'grapes, green grapes', 'yes'),
-            (24, 1, 'Arpit Apples', '3', 'Apple', '2026-04-15', 'Apple.jpg', 1500, 100, 'Best Apples grown in Kashmir', 'apples, apple, best apple', 'no'),
-            (25, 1, 'Ramlal Wheat', '1', 'Wheat', '2026-04-15', 'Wheat.jpg', 2000, 40, 'Fragrant wheat grains grown with care', 'wheat, best wheat', 'no'),
-            (27, 3, 'Arpit Alphonso Mango', '3', 'Mango', '2026-04-15', 'Mango.jpg', 2000, 200, 'Grown with love in Ratnagiri', 'mango, alphonso mango', 'yes'),
-            (28, 1, 'Ansh Custard Apple', '3', 'Custard Apple', '2026-04-15', 'custardapple.jpg', 500, 45, 'Custard Apple super sweet and tasty', 'custard apple', 'yes'),
-            (29, 3, 'Omkar Cabbage', '2', 'Cabbage', '2026-04-15', 'Cabbage.jpg', 1500, 30, 'Fresh green organic cabbage', 'cabbage', 'yes'),
-            (30, 1, 'Ansh Onion', '2', 'Onion', '2026-04-15', 'Onion.jpg', 1500, 35, 'Fresh local onions', 'onion, best onion', 'no'),
+            (1, 1, 'Ramlal Potato', '2', 'Potato', '2026-04-15', 'potato.jpg', 1000, 12, 'Best Quality product guaranteed 100 percent', 'potato', 'yes'),
+            (3, 1, 'Ramlal Tomato', '2', 'Tomato', '2026-04-15', 'tomato.jpg', 500, 15, 'Best Quality tomato assured', 'tomato, best quality tomato', 'no'),
+            (17, 3, 'Shivneri Bananas', '3', 'Bananas', '2026-04-15', 'bananas.jpg', 250, 30, 'Best Quality Bananas', 'banana, shivneri', 'yes'),
+            (18, 3, 'Ram Rice', '1', 'Rice', '2026-04-15', 'rice.jpg', 1500, 45, 'Premium aromatic Basmati rice', 'rice, best rice', 'yes'),
+            (19, 1, 'Ansh Carrot', '2', 'Carrot', '2026-04-15', 'carrot.jpg', 1250, 56, 'Big fat juicy best quality carrots assured', 'carrot, best carrot', 'yes'),
+            (21, 1, 'Abhi Maize', '1', 'Maize', '2026-04-15', 'maize.jpg', 750, 99, 'Seeds imported, grown naturally', 'maize, best maize', 'yes'),
+            (22, 3, 'Calista Coconut', '1', 'Coconut', '2026-04-15', 'coconut.jpg', 450, 25, 'Fresh sweet coconuts', 'coconut, best coconut', 'no'),
+            (23, 1, 'Arpit Grapes', '3', 'Grapes', '2026-04-15', 'grapes.jpg', 4560, 60, 'Best Grapes you will ever find', 'grapes, green grapes', 'yes'),
+            (24, 1, 'Arpit Apples', '3', 'Apple', '2026-04-15', 'apple.jpg', 1500, 100, 'Best Apples grown in Kashmir', 'apples, apple, best apple', 'no'),
+            (25, 1, 'Ramlal Wheat', '1', 'Wheat', '2026-04-15', 'wheat.jpg', 2000, 40, 'Fragrant wheat grains grown with care', 'wheat, best wheat', 'no'),
+            (27, 3, 'Arpit Alphonso Mango', '3', 'Mango', '2026-04-15', 'mango.jpg', 2000, 200, 'Grown with love in Ratnagiri', 'mango, alphonso mango', 'yes'),
+            (28, 1, 'Ansh Custard Apple', '3', 'Custard Apple', '2026-04-15', 'custard_apple.jpg', 500, 45, 'Custard Apple super sweet and tasty', 'custard apple', 'yes'),
+            (29, 3, 'Omkar Cabbage', '2', 'Cabbage', '2026-04-15', 'cabbage.jpg', 1500, 30, 'Fresh green organic cabbage', 'cabbage', 'yes'),
+            (30, 1, 'Ansh Onion', '2', 'Onion', '2026-04-15', 'onion.jpg', 1500, 35, 'Fresh local onions', 'onion, best onion', 'no'),
             (31, 1, 'Abhi Strawberry', '3', 'Strawberry', '2026-04-15', 'strawberry.jpg', 100, 50, 'Sweet organic strawberries', 'strawberry', 'yes'),
             (32, 1, 'Abhi Orange', '3', 'Orange', '2026-04-15', 'orange.jpg', 1500, 20, 'Juicy Nagpur oranges', 'orange', 'yes'),
-            (37, 1, 'Ram Sugarcane', '1', 'Sugarcane', '2026-04-25', 'Sugarcane.jpg', 1000, 25, 'Best natural sugarcane', 'sugarcane', 'yes')
+            (37, 1, 'Ram Sugarcane', '1', 'Sugarcane', '2026-04-25', 'sugarcane.jpg', 1000, 25, 'Best natural sugarcane', 'sugarcane', 'yes')
         ]
         cursor.executemany("INSERT OR REPLACE INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", products_data)
 

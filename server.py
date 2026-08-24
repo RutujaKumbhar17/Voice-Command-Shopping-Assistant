@@ -472,10 +472,21 @@ def text_to_speech():
 
 @app.route("/<path:path>")
 def serve_frontend_files(path):
-    file_path = os.path.join(os.path.dirname(__file__), "Frontend", path)
+    frontend_dir = os.path.join(os.path.dirname(__file__), "Frontend")
+    file_path = os.path.join(frontend_dir, path)
     if os.path.exists(file_path):
-        return send_from_directory("Frontend", path)
-    return send_from_directory("Frontend", "login_signup.html")
+        return send_from_directory(frontend_dir, path)
+    
+    # Case-insensitive / fallback resolver for Linux hosting (e.g. Vercel)
+    if path.startswith("image/") or path.startswith("image\\"):
+        raw_img = os.path.basename(path).lower().replace(" ", "_")
+        image_dir = os.path.join(frontend_dir, "image")
+        if os.path.exists(image_dir):
+            for f in os.listdir(image_dir):
+                if f.lower() == raw_img or f.lower() == os.path.basename(path).lower():
+                    return send_from_directory(image_dir, f)
+    
+    return send_from_directory(frontend_dir, "login_signup.html")
 
 if __name__ == "__main__":
     print("[Server] FreshRoot Voice Assistant Server running on http://127.0.0.1:5000")
