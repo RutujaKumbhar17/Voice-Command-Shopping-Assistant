@@ -21,3 +21,4 @@ plt.title('Price Comparison: Actual, Competitor, and Predicted Prices')
 plt.legend()
 plt.grid(True)
 plt.show()
+ 

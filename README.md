@@ -135,4 +135,4 @@ FarmPure/
     ├── index.html              # FarmPure Landing Page
     ├── cart.html               # Shopping Cart Page
     └── products.html           # Product Catalog Page
-```
+``` 

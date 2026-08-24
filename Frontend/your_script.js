@@ -40,4 +40,4 @@ function showError(error) {
 }
 
 // Call the getLocation function to start the process
-getLocation();
+getLocation(); 

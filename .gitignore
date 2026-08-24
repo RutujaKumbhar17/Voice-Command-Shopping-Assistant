@@ -37,3 +37,4 @@ scratch/
 
 # Trained model artifacts & checkpoints (large binary files)
 fruit_freshness_model.h5
+ 

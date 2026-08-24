@@ -310,3 +310,4 @@ class Database:
             cursor.execute("DELETE FROM cart WHERE id = ?", (cart_id,))
             conn.commit()
             return True
+ 

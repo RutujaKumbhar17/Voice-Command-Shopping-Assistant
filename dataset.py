@@ -52,3 +52,4 @@ joblib.dump(pipeline, 'pricing_model.pkl')  # Save model for future use
 # Print success message
 print("Dataset with predictions saved to 'dummy_data_with_predicted_prices.csv'")
 print("Pipeline saved to 'pricing_model.pkl'")
+ 

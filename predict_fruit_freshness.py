@@ -33,3 +33,4 @@ history = model.fit(
 # Save the trained model
 model.save('/Applications/Coding/FarmPuree/freshness_model.h5')
 print("Model saved successfully!")
+ 

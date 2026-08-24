@@ -480,3 +480,4 @@ def serve_frontend_files(path):
 if __name__ == "__main__":
     print("[Server] FreshRoot Voice Assistant Server running on http://127.0.0.1:5000")
     app.run(host="0.0.0.0", port=5000, debug=True)
+ 
