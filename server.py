@@ -28,6 +28,67 @@ if os.path.exists(PRICING_MODEL_PATH):
 def index():
     return send_from_directory("Frontend", "login_signup.html")
 
+def generate_verbal_cart_suggestions(cart_items, catalog_products):
+    """
+    Analyzes produce currently in the cart and generates dynamic verbal recommendations.
+    """
+    if not cart_items:
+        return "Your cart is currently empty. I suggest starting with fresh Apples, Bananas, or organic Potatoes."
+
+    cart_types = [item['product_type'].lower() for item in cart_items]
+    
+    # Contextual Produce Pairing Matrix
+    pairings = {
+        'potato': ['Tomato', 'Onion', 'Carrot'],
+        'potatoes': ['Tomato', 'Onion', 'Carrot'],
+        'tomato': ['Potato', 'Onion', 'Cabbage'],
+        'tomatoes': ['Potato', 'Onion', 'Cabbage'],
+        'onion': ['Potato', 'Tomato', 'Carrot'],
+        'onions': ['Potato', 'Tomato', 'Carrot'],
+        'carrot': ['Potato', 'Cabbage', 'Tomato'],
+        'carrots': ['Potato', 'Cabbage', 'Tomato'],
+        'cabbage': ['Carrot', 'Potato', 'Tomato'],
+        'banana': ['Apple', 'Strawberry', 'Orange'],
+        'bananas': ['Apple', 'Strawberry', 'Orange'],
+        'apple': ['Bananas', 'Grapes', 'Orange'],
+        'apples': ['Bananas', 'Grapes', 'Orange'],
+        'mango': ['Strawberry', 'Grapes', 'Bananas'],
+        'grapes': ['Apple', 'Orange', 'Strawberry'],
+        'orange': ['Grapes', 'Apple', 'Bananas'],
+        'strawberry': ['Bananas', 'Custard Apple', 'Apple'],
+        'custard apple': ['Strawberry', 'Mango', 'Apple'],
+        'rice': ['Wheat', 'Maize', 'Potato'],
+        'wheat': ['Rice', 'Maize', 'Potato'],
+        'maize': ['Rice', 'Wheat', 'Carrot'],
+        'coconut': ['Rice', 'Bananas', 'Sugarcane'],
+        'sugarcane': ['Coconut', 'Mango', 'Bananas']
+    }
+
+    candidates = []
+    for c_item in cart_types:
+        for key, recs in pairings.items():
+            if key in c_item:
+                for r in recs:
+                    if r.lower() not in cart_types and r not in candidates:
+                        candidates.append(r)
+
+    # Fallback if no specific pairing found
+    if not candidates:
+        for p in catalog_products:
+            p_name = p['product_type']
+            if p_name.lower() not in cart_types and p_name not in candidates:
+                candidates.append(p_name)
+            if len(candidates) >= 2:
+                break
+
+    top_picks = candidates[:2]
+    if len(top_picks) == 2:
+        return f"Based on items in your cart, I suggest adding fresh {top_picks[0]} and {top_picks[1]}."
+    elif len(top_picks) == 1:
+        return f"Based on what is in your cart, fresh {top_picks[0]} would pair well."
+    else:
+        return "Your cart looks great! You can also check out our fresh seasonal fruits."
+
 # -------------------------------------------------------------
 # Core Voice Command API Endpoint powered by MiniMax AI
 # -------------------------------------------------------------
@@ -76,7 +137,9 @@ def process_voice_command():
                 category=product.get("product_cat", "General"),
                 price=product["product_price"]
             )
-            response_text = f"Added {quantity} {unit} {product['product_type']} to your cart."
+            updated_cart = db.get_cart()
+            suggestion_verbal = generate_verbal_cart_suggestions(updated_cart, products)
+            response_text = f"Added {quantity} {unit} {product['product_type']} to your cart. {suggestion_verbal}"
             matched_products = [product]
         else:
             # Item is NOT in available farm catalog
@@ -93,7 +156,7 @@ def process_voice_command():
         if cart_items:
             total_price = sum(item["subtotal"] for item in cart_items)
             item_summaries = [f"{item['qty']} {item['product_type']}" for item in cart_items]
-            response_text = f"Your cart has {len(cart_items)} items ({', '.join(item_summaries)}). Total cost: ₹{total_price}."
+            response_text = f"Your cart has {len(cart_items)} items ({', '.join(item_summaries)}). Total cost: Rs. {total_price}."
             matched_products = cart_items
         else:
             response_text = "Your cart is currently empty. You can ask me to add apples, bananas, or potatoes."
@@ -110,10 +173,10 @@ def process_voice_command():
         if item_name:
             product = db.get_product_by_name(item_name)
             if product:
-                response_text = f"{product['product_type']} is ₹{product['product_price']} per {unit}."
+                response_text = f"{product['product_type']} is Rs. {product['product_price']} per {unit}."
                 matched_products = [product]
             else:
-                response_text = f"Fresh {item_name} is around ₹30 to ₹60 per kg."
+                response_text = f"Fresh {item_name} is around Rs. 30 to 60 per kg."
         else:
             response_text = "Which product price would you like to check?"
 
@@ -149,9 +212,16 @@ def process_voice_command():
                 response_text = "No produce matched your search."
 
     elif intent == "get_suggestions":
-        history = [item["item_name"] for item in db.get_shopping_list()]
-        suggestions = minimax.generate_smart_suggestions(history_items=history)
-        response_text = "Here are fresh recommendations for you."
+        cart_items = db.get_cart()
+        response_text = generate_verbal_cart_suggestions(cart_items, products)
+        
+        # Also attach structured recommendation objects
+        cart_types = [item['product_type'].lower() for item in cart_items]
+        rec_products = [p for p in products if p['product_type'].lower() not in cart_types][:3]
+        matched_products = rec_products
+        suggestions = {
+            "recommendations": [{"name": p["product_title"], "price": p["product_price"], "reason": "Recommended based on your cart"} for p in rec_products]
+        }
 
     elif intent == "checkout":
         cart_items = db.get_cart()

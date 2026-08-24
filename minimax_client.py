@@ -214,20 +214,24 @@ class MiniMaxClient:
             intent = "remove_item"
             response_speech = f"Removing {item_name or 'item'}."
 
-        # 6. Add item
-        elif any(w in text_lower for w in ["add", "put", "insert", "buy", "order", "include", "i need", "i want"]) or (item_name and not any(q in text_lower for q in ["how", "what", "where", "is"])):
+        # 6. Suggestions & Recommendations (e.g. "what should I buy", "give me suggestions", "recommend something")
+        elif any(w in text_lower for w in [
+            "suggest", "suggestion", "suggestions", "recommend", "recommendation", "recommendations",
+            "what should i", "what can i", "what to buy", "what pairs", "pair with", "anything else",
+            "what else", "seasonal", "running low"
+        ]):
+            intent = "get_suggestions"
+            response_speech = "Here are suggestions based on what is in your cart."
+
+        # 7. Add item
+        elif any(w in text_lower for w in ["add", "put", "insert", "order", "include", "i need", "i want"]) or (item_name and not any(q in text_lower for q in ["how", "what", "where", "is"])):
             intent = "add_item"
             response_speech = f"Adding {quantity} {unit} {item_name or 'item'} to your cart."
 
-        # 7. Search & Discovery
+        # 8. Search & Discovery
         elif any(w in text_lower for w in ["search", "find", "show me", "look for", "do you have", "is there", "browse"]):
             intent = "search_item"
             response_speech = f"Searching for {item_name or text} in our fresh produce catalog."
-
-        # 8. Suggestions & Recommendations
-        elif any(w in text_lower for w in ["suggest", "recommend", "recommendation", "seasonal", "running low", "what should i buy"]):
-            intent = "get_suggestions"
-            response_speech = "Here are our smart farm recommendations and seasonal picks."
 
         # 9. Checkout & Delivery
         elif any(w in text_lower for w in ["checkout", "place order", "pay now", "proceed to buy", "delivery", "shipping"]):
