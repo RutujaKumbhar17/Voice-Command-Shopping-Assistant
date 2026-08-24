@@ -689,21 +689,6 @@
 
     // Auto-bind robot buttons on page load
     function initButtons() {
-        if (!document.querySelector('link[href*="voice_widget.css"]')) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'voice_widget.css';
-            document.head.appendChild(link);
-        }
-
-        if (!document.querySelector('.floating-ai-btn')) {
-            const fab = document.createElement('button');
-            fab.className = 'floating-ai-btn';
-            fab.title = 'Activate AI Voice Assistant';
-            fab.innerHTML = '<i class="fa-solid fa-robot"></i>';
-            document.body.appendChild(fab);
-        }
-
         injectWidgetDOM();
         refreshCartBadge();
 
