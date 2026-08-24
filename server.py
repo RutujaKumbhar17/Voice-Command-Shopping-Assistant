@@ -96,6 +96,7 @@ def generate_verbal_cart_suggestions(cart_items, catalog_products):
 def process_voice_command():
     data = request.get_json() or {}
     transcript = data.get("transcript", "").strip()
+    session_context = data.get("context", {})
 
     if not transcript:
         return jsonify({"error": "Transcript is required"}), 400
@@ -109,43 +110,55 @@ def process_voice_command():
         transcript,
         available_products=products,
         cart_data=current_cart,
-        list_data=current_list
+        list_data=current_list,
+        context=session_context
     )
     intent = parsed.get("intent", "general_query")
     target = parsed.get("target", "both")
     item_name = parsed.get("item_name")
-    quantity = parsed.get("quantity", 1)
+    quantity = parsed.get("quantity")
     unit = parsed.get("unit") or "kg"
     max_price = parsed.get("max_price")
     category = parsed.get("category")
+    pending_item = None
 
     response_text = parsed.get("response_speech") or "I processed your request."
     matched_products = []
     suggestions = None
 
     # Step 2: Execute Intent Actions
-    if intent == "add_item":
+    if intent == "ask_quantity":
+        pending_item = item_name
+        response_text = parsed.get("response_speech") or f"How much {item_name or 'item'} would you like to add? Please specify the quantity, for example 1 kg or 2 kg."
+        product = db.get_product_by_name(item_name) if item_name else None
+        if product:
+            matched_products = [product]
+
+    elif intent == "add_item":
+        actual_qty = quantity if (quantity is not None and quantity > 0) else 1
         clean_name = item_name or transcript
         product = db.get_product_by_name(clean_name)
 
         if product:
-            db.add_to_cart(product["product_id"], qty=quantity)
+            db.add_to_cart(product["product_id"], qty=actual_qty)
             db.add_to_shopping_list(
                 item_name=product["product_type"].title(),
-                quantity=quantity,
+                quantity=actual_qty,
                 unit=unit,
                 category=product.get("product_cat", "General"),
                 price=product["product_price"]
             )
             updated_cart = db.get_cart()
             suggestion_verbal = generate_verbal_cart_suggestions(updated_cart, products)
-            response_text = f"Added {quantity} {unit} {product['product_type']} to your cart. {suggestion_verbal}"
+            response_text = f"Added {actual_qty} {unit} {product['product_type']} to your cart. {suggestion_verbal}"
             matched_products = [product]
+            pending_item = None
         else:
             # Item is NOT in available farm catalog
             available_samples = [p["product_type"] for p in products[:7]]
             response_text = f"Sorry, '{clean_name}' is not available in our store. We have {', '.join(available_samples)}, and more."
             matched_products = []
+            pending_item = None
 
     elif intent == "store_inventory":
         sample_names = [p["product_type"] for p in products[:7]]
@@ -182,9 +195,22 @@ def process_voice_command():
 
     elif intent == "remove_item":
         clean_name = item_name or transcript
-        db.remove_from_cart_by_name(clean_name)
+        qty_to_remove = quantity if (quantity is not None and quantity > 0) else 1
+        success, remaining_qty, product = db.remove_from_cart_by_name(clean_name, qty=qty_to_remove)
         db.remove_from_shopping_list(clean_name)
-        response_text = f"Removed {clean_name} from your cart."
+        
+        if success:
+            p_name = product["product_type"] if product else clean_name
+            p_unit = unit or "kg"
+            if remaining_qty > 0:
+                response_text = f"Removed {qty_to_remove} {p_unit} {p_name}. You now have {remaining_qty} {p_unit} remaining in your cart."
+            else:
+                response_text = f"Removed {p_name} from your cart."
+        else:
+            response_text = f"{clean_name} is not currently in your cart."
+        
+        matched_products = []
+        pending_item = None
 
     elif intent == "clear_list":
         db.clear_shopping_list()
@@ -242,6 +268,7 @@ def process_voice_command():
     return jsonify({
         "success": True,
         "intent": intent,
+        "pending_item": pending_item,
         "parsed_nlu": parsed,
         "response_speech": response_text,
         "audio_b64": audio_b64,
@@ -322,10 +349,94 @@ def get_products():
 
 @app.route("/api/suggestions", methods=["GET"])
 def get_suggestions():
-    history = [item["item_name"] for item in db.get_shopping_list()]
+    cart_items = db.get_cart()
     products = db.get_all_products()
-    suggestions = minimax.generate_smart_suggestions(history_items=history, products_catalog=products)
-    return jsonify({"suggestions": suggestions})
+    cart_types = [item['product_type'].lower() for item in cart_items]
+    
+    pairings = {
+        'potato': ['Tomato', 'Onion', 'Carrot'],
+        'potatoes': ['Tomato', 'Onion', 'Carrot'],
+        'tomato': ['Potato', 'Onion', 'Cabbage'],
+        'tomatoes': ['Potato', 'Onion', 'Cabbage'],
+        'onion': ['Potato', 'Tomato', 'Carrot'],
+        'onions': ['Potato', 'Tomato', 'Carrot'],
+        'carrot': ['Potato', 'Cabbage', 'Tomato'],
+        'carrots': ['Potato', 'Cabbage', 'Tomato'],
+        'cabbage': ['Carrot', 'Potato', 'Tomato'],
+        'banana': ['Apple', 'Strawberry', 'Orange'],
+        'bananas': ['Apple', 'Strawberry', 'Orange'],
+        'apple': ['Bananas', 'Grapes', 'Orange'],
+        'apples': ['Bananas', 'Grapes', 'Orange'],
+        'mango': ['Strawberry', 'Grapes', 'Bananas'],
+        'grapes': ['Apple', 'Orange', 'Strawberry'],
+        'orange': ['Grapes', 'Apple', 'Bananas'],
+        'strawberry': ['Bananas', 'Custard Apple', 'Apple'],
+        'custard apple': ['Strawberry', 'Mango', 'Apple'],
+        'rice': ['Wheat', 'Maize', 'Potato'],
+        'wheat': ['Rice', 'Maize', 'Potato'],
+        'maize': ['Rice', 'Wheat', 'Carrot'],
+        'coconut': ['Rice', 'Bananas', 'Sugarcane'],
+        'sugarcane': ['Coconut', 'Mango', 'Bananas']
+    }
+
+    rec_names = []
+    reason_map = {}
+    for c_item in cart_types:
+        for key, recs in pairings.items():
+            if key in c_item:
+                for r in recs:
+                    if r.lower() not in cart_types and r not in rec_names:
+                        rec_names.append(r)
+                        reason_map[r] = f"Pairs with {c_item.title()} in your cart"
+
+    if not rec_names:
+        rec_names = ["Tomato", "Onion", "Carrot", "Bananas"]
+        for r in rec_names:
+            reason_map[r] = "Popular fresh farm staple"
+
+    recommendations = []
+    for r_name in rec_names[:3]:
+        p = db.get_product_by_name(r_name)
+        if p:
+            recommendations.append({
+                "name": p["product_title"],
+                "price": p["product_price"],
+                "reason": reason_map.get(r_name, "Recommended for your cart"),
+                "category": p.get("product_cat", "Vegetables")
+            })
+
+    seasonal_names = ["Mango", "Strawberry", "Custard Apple"]
+    seasonal = []
+    for s_name in seasonal_names:
+        p = db.get_product_by_name(s_name)
+        if p:
+            seasonal.append({
+                "name": p["product_title"],
+                "price": p["product_price"],
+                "reason": "Fresh seasonal harvest",
+                "category": "Fruits"
+            })
+
+    substitute_names = ["Maize", "Rice", "Wheat"]
+    substitutes = []
+    for sub_name in substitute_names:
+        p = db.get_product_by_name(sub_name)
+        if p:
+            substitutes.append({
+                "name": p["product_title"],
+                "price": p["product_price"],
+                "reason": "Farm-direct grains & produce",
+                "category": "Grains"
+            })
+
+    return jsonify({
+        "suggestions": {
+            "verbal_summary": generate_verbal_cart_suggestions(cart_items, products),
+            "recommendations": recommendations,
+            "seasonal": seasonal,
+            "substitutes": substitutes
+        }
+    })
 
 @app.route("/api/predict-price", methods=["POST"])
 def predict_price():

@@ -505,6 +505,9 @@
         return path;
     }
 
+    // Global session context for conversational flow (e.g. pending item quantity)
+    window.voiceSessionContext = window.voiceSessionContext || {};
+
     // Process user input (from voice or text)
     async function handleUserVoiceInput(transcript) {
         if (!transcript || !transcript.trim()) return;
@@ -519,7 +522,8 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     transcript: transcript,
-                    language: selectedLanguage
+                    language: selectedLanguage,
+                    context: window.voiceSessionContext
                 })
             });
 
@@ -535,8 +539,26 @@
                     } catch (e) {}
                 }
 
-                // 1. Add Item: Automatic addition already completed on backend
-                if (data.intent === 'add_item') {
+                // 1. Ask for Quantity when user didn't specify
+                if (data.intent === 'ask_quantity') {
+                    window.voiceSessionContext = { pending_item: data.pending_item };
+                    const pItem = data.pending_item || 'item';
+                    extraHtml += `
+                        <div style="margin-top: 10px; background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 10px;">
+                            <div style="font-size: 12.5px; color: #94a3b8; margin-bottom: 6px;">Tap or speak a quantity:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                <button class="ai-chip" onclick="window.FreshRootVoice.handleCommand('1 kg')">1 kg</button>
+                                <button class="ai-chip" onclick="window.FreshRootVoice.handleCommand('2 kg')">2 kg</button>
+                                <button class="ai-chip" onclick="window.FreshRootVoice.handleCommand('3 kg')">3 kg</button>
+                                <button class="ai-chip" onclick="window.FreshRootVoice.handleCommand('5 kg')">5 kg</button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // 2. Add Item: Automatic addition already completed on backend
+                else if (data.intent === 'add_item') {
+                    window.voiceSessionContext = {};
                     // Instantly sync UI
                     refreshCartBadge();
                     if (typeof window.loadCart === 'function') window.loadCart();

@@ -97,27 +97,107 @@ class MiniMaxClient:
         return local_parsed
 
         # High-accuracy Local Fallback NLP Parser
-        return self._fallback_parse(user_transcript, available_products, cart_data, list_data)
+DEFAULT_PRODUCT_UNITS = {
+    "milk": "litre",
+    "organic milk": "litre",
+    "dairy": "litre",
+    "rice": "kg",
+    "wheat": "kg",
+    "maize": "kg",
+    "potato": "kg",
+    "potatoes": "kg",
+    "tomato": "kg",
+    "tomatoes": "kg",
+    "carrot": "kg",
+    "carrots": "kg",
+    "onion": "kg",
+    "onions": "kg",
+    "cabbage": "kg",
+    "apple": "kg",
+    "apples": "kg",
+    "banana": "kg",
+    "bananas": "kg",
+    "mango": "kg",
+    "grapes": "kg",
+    "orange": "kg",
+    "custard apple": "kg",
+    "strawberry": "box",
+    "strawberries": "box",
+    "coconut": "piece",
+    "sugarcane": "piece",
+    "coriander": "bunch"
+}
 
-    def _fallback_parse(self, text, available_products=None, cart_data=None, list_data=None):
+class MiniMaxClient:
+    def __init__(self, api_key=None, group_id=None):
+        self.api_key = api_key or os.getenv("MINIMAX_API_KEY", "")
+        self.group_id = group_id or os.getenv("MINIMAX_GROUP_ID", "")
+        self.tts_disabled = False
+
+    def parse_voice_command(self, user_transcript, available_products=None, cart_data=None, list_data=None, context=None):
+        """
+        Parses spoken voice command into structured intent, entities, and quantity.
+        """
+        local_parsed = self._fallback_parse(user_transcript, available_products, cart_data, list_data, context)
+        return local_parsed
+
+    def _fallback_parse(self, text, available_products=None, cart_data=None, list_data=None, context=None):
         text_lower = text.lower().strip()
+        context = context or {}
         intent = "general_query"
         target = "both"
         item_name = None
-        quantity = 1
-        unit = "kg"
+        quantity = None
+        explicit_unit = None
         max_price = None
         category = None
+        has_explicit_qty = False
+        pending_item = context.get("pending_item")
 
-        # Extract numbers & quantity
-        qty_match = re.search(r'(\d+)\s*(kg|kilos|kilo|dozen|pack|packs|pieces|bottles|tons)?', text_lower)
+        # Number words dictionary
+        number_words = {
+            "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+            "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+            "dozen": 12, "half": 1
+        }
+
+        # 1. Extract Unit if specified in speech
+        unit_match = re.search(r'\b(kg|kilos|kilo|litre|litres|liter|liters|l|ltr|ltrs|dozen|pack|packs|pieces|piece|box|boxes|bunch|bunches|gram|grams|gm)\b', text_lower)
+        if unit_match:
+            u_raw = unit_match.group(1).lower()
+            if "kilo" in u_raw or u_raw == "kg":
+                explicit_unit = "kg"
+            elif "lit" in u_raw or u_raw in ["l", "ltr", "ltrs"]:
+                explicit_unit = "litre"
+            elif "dozen" in u_raw:
+                explicit_unit = "dozen"
+            elif "box" in u_raw:
+                explicit_unit = "box"
+            elif "piece" in u_raw or "pack" in u_raw:
+                explicit_unit = "piece"
+            elif "bunch" in u_raw:
+                explicit_unit = "bunch"
+            else:
+                explicit_unit = u_raw
+
+        # 2. Extract Digits & Quantities (e.g. "3 kg", "2 litres", "5", "2.5 kilos", "10 pieces")
+        qty_match = re.search(r'\b(\d+(?:\.\d+)?)\s*(kg|kilos|kilo|litre|litres|liter|liters|l|ltr|dozen|pack|packs|pieces|piece|bottles|box|boxes)?\b', text_lower)
         if qty_match:
             try:
-                quantity = int(qty_match.group(1))
-                if qty_match.group(2):
-                    unit = qty_match.group(2)
+                raw_num = float(qty_match.group(1))
+                quantity = int(round(raw_num)) if raw_num >= 1 else 1
+                has_explicit_qty = True
             except Exception:
-                quantity = 1
+                pass
+
+        # 3. Extract Written Number Words (e.g. "two litres", "three kg", "five bananas")
+        if not has_explicit_qty:
+            for word, val in number_words.items():
+                m = re.search(r'\b' + word + r'\b', text_lower)
+                if m:
+                    quantity = val
+                    has_explicit_qty = True
+                    break
 
         # Extract max price filter
         price_match = re.search(r'(?:under|below|less than|within)\s*(?:rs|inr|₹)?\s*(\d+)', text_lower)
@@ -141,7 +221,6 @@ class MiniMaxClient:
                 p_title = p["product_title"].lower()
                 p_stem = p_type[:-1] if p_type.endswith('s') else p_type
                 
-                # Use word-boundary regex to prevent 'rice' matching in 'price'
                 if re.search(r'\b' + re.escape(p_type) + r'\b', text_lower) or \
                    re.search(r'\b' + re.escape(p_title) + r'\b', text_lower) or \
                    (len(p_stem) > 2 and re.search(r'\b' + re.escape(p_stem) + r'(?:s|es)?\b', text_lower)):
@@ -149,34 +228,41 @@ class MiniMaxClient:
                     category = p.get("product_cat")
                     break
 
+        if not item_name and pending_item and has_explicit_qty:
+            item_name = pending_item
+
         if not item_name:
-            common_items = ["banana", "bananas", "potato", "potatoes", "tomato", "tomatoes", "apple", "apples", "rice", "carrot", "carrots", "onion", "onions", "milk", "wheat", "mango", "mangoes", "grapes", "strawberry", "orange", "cabbage"]
+            common_items = ["milk", "banana", "bananas", "potato", "potatoes", "tomato", "tomatoes", "apple", "apples", "rice", "carrot", "carrots", "onion", "onions", "wheat", "mango", "mangoes", "grapes", "strawberry", "orange", "cabbage", "maize", "coconut", "sugarcane"]
             for ci in common_items:
                 if re.search(r'\b' + re.escape(ci) + r'\b', text_lower):
                     item_name = ci.title()
                     break
 
-        # Check for Cart inquiries ("what is in my cart", "how much is my cart", "cart price", "cart cost", "my cart", etc.)
+        # Resolve Unit: explicit spoken unit > natural product unit
+        prod_unit = DEFAULT_PRODUCT_UNITS.get((item_name or "").lower(), "kg")
+        unit = explicit_unit if explicit_unit else prod_unit
+
+        # Check for Cart inquiries
         is_cart_inquiry = (
             ("cart" in text_lower or "basket" in text_lower or "bag" in text_lower) and
             any(w in text_lower for w in ["price", "total", "cost", "value", "bill", "amount", "how much", "what is", "what's", "check", "view", "show", "items", "in my", "in the", "what do i have", "tell me", "what is in", "what is the"]) and
             not any(w in text_lower for w in ["add", "put", "insert", "remove", "delete", "clear", "empty", "drop"])
         ) or (text_lower.strip() in ["my cart", "cart", "view cart", "check cart", "cart cost", "cart price", "cart total"])
 
-        # Check for Store Inventory inquiry ("count how much items in store", "how many items", "what products do you have", etc.)
+        # Check for Store Inventory inquiry
         is_store_inventory = any(phrase in text_lower for phrase in [
             "count how much items", "how many items", "items in store", "items in your store",
             "what items you have", "what do you have", "what produce", "store inventory", "available items", "products available"
         ])
 
-        # Check for Shopping List inquiries ("what is in my shopping list", "show my list", etc.)
+        # Check for Shopping List inquiries
         is_list_inquiry = (
             ("list" in text_lower or "shopping list" in text_lower) and
             any(w in text_lower for w in ["what is", "what's", "show", "view", "check", "tell", "read", "on my", "in my", "items"]) and
             not any(w in text_lower for w in ["add", "put", "insert", "remove", "delete", "clear", "empty"])
         )
 
-        # Check for Product Price inquiry ("what is the price of apples", "how much is bananas")
+        # Check for Product Price inquiry
         is_price_inquiry = (
             item_name and
             any(w in text_lower for w in ["how much", "price", "cost", "rate", "what is the price", "what's the price"]) and
@@ -200,7 +286,7 @@ class MiniMaxClient:
             intent = "get_price"
             response_speech = f"Checking price for {item_name}."
 
-        # 4. Clear list / clear cart
+        # Clear list / clear cart
         elif "clear" in text_lower or "empty" in text_lower:
             if "cart" in text_lower:
                 intent = "clear_cart"
@@ -209,12 +295,13 @@ class MiniMaxClient:
                 intent = "clear_list"
                 response_speech = "Clearing your shopping list."
 
-        # 5. Remove item
-        elif any(w in text_lower for w in ["remove", "delete", "drop", "take off", "cancel"]):
+        # Remove item (e.g. "remove 1 kg potato", "remove 1 potato", "reduce 1 kg potato", "delete 2 milk", "take off 1 apple")
+        elif any(w in text_lower for w in ["remove", "delete", "drop", "take off", "cancel", "reduce", "decrease", "minus"]):
             intent = "remove_item"
-            response_speech = f"Removing {item_name or 'item'}."
+            qty_text = f"{quantity} {unit} " if (has_explicit_qty and quantity) else ""
+            response_speech = f"Removing {qty_text}{item_name or 'item'} from your cart."
 
-        # 6. Suggestions & Recommendations (e.g. "what should I buy", "give me suggestions", "recommend something")
+        # Suggestions & Recommendations
         elif any(w in text_lower for w in [
             "suggest", "suggestion", "suggestions", "recommend", "recommendation", "recommendations",
             "what should i", "what can i", "what to buy", "what pairs", "pair with", "anything else",
@@ -223,17 +310,33 @@ class MiniMaxClient:
             intent = "get_suggestions"
             response_speech = "Here are suggestions based on what is in your cart."
 
-        # 7. Add item
-        elif any(w in text_lower for w in ["add", "put", "insert", "order", "include", "i need", "i want"]) or (item_name and not any(q in text_lower for q in ["how", "what", "where", "is"])):
-            intent = "add_item"
-            response_speech = f"Adding {quantity} {unit} {item_name or 'item'} to your cart."
+        # Add item / Quantity handling
+        elif any(w in text_lower for w in ["add", "put", "insert", "order", "include", "i need", "i want", "buy"]) or (item_name and not any(q in text_lower for q in ["how", "what", "where", "is", "price", "cost"])) or (pending_item and has_explicit_qty):
+            if not has_explicit_qty:
+                # User did not specify quantity! Ask user to specify with proper units
+                intent = "ask_quantity"
+                actual_name = item_name or "item"
+                if prod_unit == "litre":
+                    example_str = "1 litre or 2 litres"
+                elif prod_unit == "piece":
+                    example_str = "2 pieces"
+                elif prod_unit == "box":
+                    example_str = "1 box or 2 boxes"
+                elif prod_unit == "dozen":
+                    example_str = "1 dozen"
+                else:
+                    example_str = "1 kg or 2 kg"
+                response_speech = f"How much {actual_name} would you like to add? Please specify the quantity, for example {example_str}."
+            else:
+                intent = "add_item"
+                response_speech = f"Adding {quantity} {unit} {item_name or 'item'} to your cart."
 
-        # 8. Search & Discovery
+        # Search & Discovery
         elif any(w in text_lower for w in ["search", "find", "show me", "look for", "do you have", "is there", "browse"]):
             intent = "search_item"
             response_speech = f"Searching for {item_name or text} in our fresh produce catalog."
 
-        # 9. Checkout & Delivery
+        # Checkout & Delivery
         elif any(w in text_lower for w in ["checkout", "place order", "pay now", "proceed to buy", "delivery", "shipping"]):
             intent = "checkout"
             response_speech = "You can proceed to checkout directly from your cart page."

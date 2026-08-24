@@ -267,20 +267,42 @@ class Database:
         success = self.add_to_cart(product["product_id"], qty=qty, phone=phone)
         return success, product
 
-    def remove_from_cart_by_name(self, name, phone=8169193101):
+    def remove_from_cart_by_name(self, name, qty=1, phone=8169193101):
+        """
+        Reduces quantity of specified item in cart by `qty`.
+        If qty is None or >= current quantity, removes the item completely.
+        Returns: (success: bool, remaining_qty: int, product: dict)
+        """
         if not name:
-            return False
+            return False, 0, None
+        
+        product = self.get_product_by_name(name)
+        if not product:
+            return False, 0, None
+        
+        product_id = product["product_id"]
+        unit_price = product["product_price"]
+
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("""
-                DELETE FROM cart 
-                WHERE phonenumber = ? AND product_id IN (
-                    SELECT product_id FROM products WHERE LOWER(product_type) LIKE ? OR LOWER(product_title) LIKE ?
-                )
-            """, (phone, f"%{name.lower()}%", f"%{name.lower()}%"))
-            deleted = cursor.rowcount
-            conn.commit()
-            return deleted > 0
+            cursor.execute("SELECT id, qty FROM cart WHERE product_id = ? AND phonenumber = ?", (product_id, phone))
+            row = cursor.fetchone()
+            if not row:
+                return False, 0, product
+            
+            cart_id = row["id"]
+            current_qty = row["qty"]
+
+            if qty is None or qty >= current_qty:
+                cursor.execute("DELETE FROM cart WHERE id = ?", (cart_id,))
+                conn.commit()
+                return True, 0, product
+            else:
+                new_qty = current_qty - qty
+                new_subtotal = new_qty * unit_price
+                cursor.execute("UPDATE cart SET qty = ?, subtotal = ? WHERE id = ?", (new_qty, new_subtotal, cart_id))
+                conn.commit()
+                return True, new_qty, product
 
     def remove_from_cart(self, cart_id):
         with self.get_connection() as conn:

@@ -670,29 +670,58 @@
         }
 
         async function loadSuggestions() {
-            const res = await fetch('/api/suggestions');
-            const data = await res.json();
-            const sugg = data.suggestions;
-            const container = document.getElementById('homeSuggestionsList');
-            if (!sugg) return;
+            try {
+                const res = await fetch('/api/suggestions');
+                const data = await res.json();
+                const sugg = data.suggestions;
+                const container = document.getElementById('homeSuggestionsList');
+                if (!sugg || !container) return;
 
-            let html = '';
-            if (sugg.recommendations) {
-                sugg.recommendations.forEach(i => {
-                    html += `<div class="sugg-item"><div><strong>${i.name}</strong> <span class="sugg-tag tag-rec">Recommended</span></div><span style="color:var(--primary); font-weight:700;">₹${i.price}</span></div>`;
-                });
+                let html = '';
+                if (sugg.verbal_summary) {
+                    html += `<div style="font-size: 13px; background: rgba(16, 125, 9, 0.08); border-left: 3px solid #107d09; padding: 8px 12px; border-radius: 8px; margin-bottom: 10px; color: #107d09; font-weight: 500;"><i class="fa-solid fa-robot"></i> ${sugg.verbal_summary}</div>`;
+                }
+                if (sugg.recommendations) {
+                    sugg.recommendations.forEach(i => {
+                        html += `
+                            <div class="sugg-item">
+                                <div>
+                                    <strong>${i.name}</strong> 
+                                    <span class="sugg-tag tag-rec">Pairs with Cart</span>
+                                    <div style="font-size: 11px; color: #64748b;">${i.reason || ''}</div>
+                                </div>
+                                <span style="color:var(--primary); font-weight:700;">₹${i.price}</span>
+                            </div>`;
+                    });
+                }
+                if (sugg.seasonal) {
+                    sugg.seasonal.forEach(i => {
+                        html += `
+                            <div class="sugg-item">
+                                <div>
+                                    <strong>${i.name}</strong> 
+                                    <span class="sugg-tag tag-sea">Seasonal Pick</span>
+                                </div>
+                                <span style="color:var(--primary); font-weight:700;">₹${i.price}</span>
+                            </div>`;
+                    });
+                }
+                if (sugg.substitutes) {
+                    sugg.substitutes.forEach(i => {
+                        html += `
+                            <div class="sugg-item">
+                                <div>
+                                    <strong>${i.name}</strong> 
+                                    <span class="sugg-tag tag-sub">Produce Pick</span>
+                                </div>
+                                <span style="color:var(--primary); font-weight:700;">₹${i.price}</span>
+                            </div>`;
+                    });
+                }
+                container.innerHTML = html;
+            } catch (e) {
+                console.error("Failed to load suggestions:", e);
             }
-            if (sugg.seasonal) {
-                sugg.seasonal.forEach(i => {
-                    html += `<div class="sugg-item"><div><strong>${i.name}</strong> <span class="sugg-tag tag-sea">Seasonal Pick</span></div><span style="color:var(--primary); font-weight:700;">₹${i.price}</span></div>`;
-                });
-            }
-            if (sugg.substitutes) {
-                sugg.substitutes.forEach(i => {
-                    html += `<div class="sugg-item"><div><strong>${i.name}</strong> <span class="sugg-tag tag-sub">Substitute</span></div><span style="color:var(--primary); font-weight:700;">₹${i.price}</span></div>`;
-                });
-            }
-            container.innerHTML = html;
         }
 
         async function calculateMlPrice() {
@@ -717,6 +746,15 @@
             updateCartBadge();
             loadSuggestions();
         };
+
+        window.addEventListener('cartUpdated', () => {
+            updateCartBadge();
+            loadSuggestions();
+        });
+        window.addEventListener('storage', () => {
+            updateCartBadge();
+            loadSuggestions();
+        });
     </script>
     <script src="voice_widget.js"></script>
 </body>
