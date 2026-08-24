@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="voice_widget.css">
     
     <style>
         :root {
@@ -144,20 +145,14 @@
         .hero-banner {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: white;
-            padding: 40px 60px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            padding: 50px 30px;
+            display: flex;
+            justify-content: center;
             align-items: center;
+            text-align: center;
             position: relative;
             overflow: hidden;
-        }
-
-        @media (max-width: 900px) {
-            .hero-banner {
-                grid-template-columns: 1fr;
-                padding: 30px 20px;
-            }
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .hero-text h1 {
@@ -495,8 +490,7 @@
 
     <!-- Header Navigation -->
     <header id="header">
-        <a href="home.html" class="logo-container">
-            <img src="./image/logo1.png" alt="FreshRoot Logo" onerror="this.style.display='none'">
+        <a href="home.html" class="logo-container" style="text-decoration: none;">
             <span class="logo-text"><i class="fa-solid fa-leaf"></i> FreshRoot</span>
         </a>
         <nav id="navbar">
@@ -504,7 +498,6 @@
                 <li><a class="active" href="home.html">Home</a></li>
                 <li><a href="products.html">Products</a></li>
                 <li><a href="categories.html">Categories</a></li>
-                <li><a href="voice_assistant.html">AI Voice Assistant</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="review.html">Review</a></li>
             </ul>
@@ -523,50 +516,16 @@
 
     <!-- Hero Banner with Embedded AI Voice Controller -->
     <section class="hero-banner">
-        <div class="hero-text">
+        <div class="hero-text" style="max-width: 800px; margin: 0 auto; text-align: center;">
             <h1>Fastest Delivery & <span>Farm Fresh</span> Organic Produce</h1>
-            <p>Order fruits, vegetables, and farm staples directly from local farmers using voice commands powered by MiniMax AI.</p>
-            <div style="display: flex; gap: 12px;">
-                <a href="voice_assistant.html" class="add-btn" style="text-decoration: none; display: inline-block; width: auto; padding: 12px 24px;">
-                    <i class="fa-solid fa-robot"></i> Open Full AI Assistant
+            <p>Order fruits, vegetables, and farm staples directly from certified local farmers with express doorstep delivery.</p>
+            <div style="display: flex; gap: 14px; justify-content: center; margin-top: 20px;">
+                <a href="products.html" class="add-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px; width: auto; padding: 12px 28px;">
+                    <i class="fa-solid fa-store"></i> Shop Products
                 </a>
-                <a href="products.html" style="text-decoration: none; padding: 12px 24px; background: rgba(255,255,255,0.1); color: white; border-radius: 10px; font-weight: 600;">
-                    Browse Catalog
+                <a href="categories.html" style="text-decoration: none; padding: 12px 28px; background: rgba(255,255,255,0.1); color: white; border-radius: 10px; font-weight: 600; border: 1px solid rgba(255,255,255,0.2);">
+                    Explore Categories
                 </a>
-            </div>
-        </div>
-
-        <!-- Right Side: Interactive AI Voice Widget -->
-        <div class="hero-ai-card">
-            <div class="hero-ai-header">
-                <div class="hero-ai-title">
-                    <i class="fa-solid fa-sparkles"></i> MiniMax AI Voice Engine
-                </div>
-                <select id="heroLangSelect" style="background: rgba(0,0,0,0.4); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 6px; font-size: 12px;">
-                    <option value="en-US">English (US)</option>
-                    <option value="hi-IN">Hindi (हिंदी)</option>
-                    <option value="mr-IN">Marathi (मराठी)</option>
-                    <option value="es-ES">Spanish</option>
-                    <option value="fr-FR">French</option>
-                </select>
-            </div>
-
-            <button id="heroMicBtn" class="hero-mic-btn" onclick="toggleHeroMic()">
-                <i class="fa-solid fa-microphone"></i>
-            </button>
-
-            <div id="heroStatusText" style="text-align: center; font-size: 13px; color: #34d399; margin-bottom: 10px;">
-                Tap mic to add items or search produce by voice
-            </div>
-
-            <div class="hero-transcript" id="heroTranscript">
-                "Add 2 kg carrots" or "Find chillies under 50"...
-            </div>
-
-            <div class="hero-chips">
-                <div class="hero-chip" onclick="simulateHeroVoice('Add 2 kg carrots')">"Add 2 kg carrots"</div>
-                <div class="hero-chip" onclick="simulateHeroVoice('Find chillies under 50')">"Chillies under ₹50"</div>
-                <div class="hero-chip" onclick="simulateHeroVoice('Suggest seasonal fruits')">"Seasonal recommendations"</div>
             </div>
         </div>
     </section>
@@ -627,16 +586,14 @@
         </div>
     </section>
 
-    <!-- Floating Mic Action Button -->
-    <button class="floating-ai-btn" onclick="window.location.href='voice_assistant.html'" title="Open AI Assistant">
+    <!-- Floating Voice Assistant Action Button -->
+    <button class="floating-ai-btn" onclick="FreshRootVoice.activate()" title="Activate AI Voice Assistant">
         <i class="fa-solid fa-robot"></i>
     </button>
 
-    <!-- Hidden Audio Player for MiniMax Speech -->
-    <audio id="homeAudioPlayer" style="display: none;"></audio>
-
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2026 FreshRoot. All rights reserved. Powered by MiniMax AI.</p>
+        <p>&copy; 2026 FreshRoot Organics. Direct from certified local farmers.</p>
         <div class="social-icons">
             <a href="#" class="social-icon-btn"><i class="fa-brands fa-facebook"></i></a>
             <a href="#" class="social-icon-btn"><i class="fa-brands fa-twitter"></i></a>
@@ -645,91 +602,20 @@
     </footer>
 
     <script>
-        let heroListening = false;
-        let heroRecognition = null;
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProductsGrid();
+            updateCartBadge();
+            loadSuggestions();
+        });
 
-        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            heroRecognition = new SpeechRecognition();
-            heroRecognition.continuous = false;
-            heroRecognition.interimResults = false;
-
-            heroRecognition.onstart = function() {
-                heroListening = true;
-                document.getElementById('heroMicBtn').classList.add('listening');
-                document.getElementById('heroStatusText').innerText = "Listening to your voice command...";
-            };
-
-            heroRecognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById('heroTranscript').innerText = `"${transcript}"`;
-                sendHeroVoiceCommand(transcript);
-            };
-
-            heroRecognition.onerror = function() {
-                stopHeroListening();
-                document.getElementById('heroStatusText').innerText = "Speech not recognized. Try again.";
-            };
-
-            heroRecognition.onend = function() {
-                stopHeroListening();
-            };
-        }
-
-        function toggleHeroMic() {
-            if (!heroRecognition) {
-                alert("Web Speech API is not supported in this browser. You can click prompt chips or open the full assistant.");
-                return;
-            }
-            if (heroListening) {
-                heroRecognition.stop();
-            } else {
-                heroRecognition.lang = document.getElementById('heroLangSelect').value;
-                heroRecognition.start();
-            }
-        }
-
-        function stopHeroListening() {
-            heroListening = false;
-            document.getElementById('heroMicBtn').classList.remove('listening');
-        }
-
-        function simulateHeroVoice(text) {
-            document.getElementById('heroTranscript').innerText = `"${text}"`;
-            sendHeroVoiceCommand(text);
-        }
-
-        async function sendHeroVoiceCommand(transcript) {
-            document.getElementById('heroStatusText').innerText = "Processing with MiniMax AI...";
-
+        async function updateCartBadge() {
             try {
-                const res = await fetch('/api/voice-command', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ transcript: transcript, language: document.getElementById('heroLangSelect').value })
-                });
-
+                const res = await fetch('/api/cart');
                 const data = await res.json();
-                if (data.success) {
-                    document.getElementById('heroStatusText').innerText = data.response_speech;
-                    if (data.audio_b64) {
-                        playHomeAudio(data.audio_b64);
-                    }
-                    if (data.matched_products && data.matched_products.length > 0) {
-                        renderProductsGrid(data.matched_products);
-                    }
-                    updateCartBadge();
-                }
-            } catch (err) {
-                console.error(err);
-                document.getElementById('heroStatusText').innerText = "Failed to connect to backend AI server.";
-            }
-        }
-
-        function playHomeAudio(b64) {
-            const player = document.getElementById('homeAudioPlayer');
-            player.src = "data:audio/mp3;base64," + b64;
-            player.play();
+                const count = data.cart ? data.cart.length : 0;
+                const badges = document.querySelectorAll('#cartCountBadge, .cart-badge');
+                badges.forEach(b => b.innerText = count);
+            } catch (e) {}
         }
 
         async function renderProductsGrid(products) {
@@ -828,5 +714,6 @@
             loadSuggestions();
         };
     </script>
+    <script src="voice_widget.js"></script>
 </body>
 </html>

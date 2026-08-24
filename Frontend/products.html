@@ -6,13 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products Page</title>
     <link rel="stylesheet" href="style_p.css">
+    <link rel="stylesheet" href="voice_widget.css">
     <script src="https://kit.fontawesome.com/d9f55f49c0.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
 
     <section id="header">
-        <a href="#"><img src="./image/logo1.png" class="logo" alt="Logo"></a>
+        <a href="home.html" style="text-decoration: none; font-size: 22px; font-weight: 700; color: #10b981; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-leaf"></i> FreshRoot</a>
         <div id="navbar">
             <ul class="nav-links">
                 <li><a class="active" href="home.html">Home</a></li>
@@ -350,7 +351,39 @@
     </footer>
     
 
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.product-card').forEach(card => {
+                const btn = card.querySelector('.add-btn');
+                if (btn) {
+                    btn.onclick = async function() {
+                        const title = card.querySelector('h4') ? card.querySelector('h4').innerText.trim() : '';
+                        const select = card.querySelector('select');
+                        const qty = select ? parseInt(select.value) || 1 : 1;
+
+                        try {
+                            const res = await fetch('/api/products?query=' + encodeURIComponent(title.split(' ')[0]));
+                            const data = await res.json();
+                            const prod = (data.products && data.products.length > 0) ? data.products[0] : null;
+                            const prodId = prod ? prod.product_id : 1;
+
+                            await fetch('/api/cart', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ product_id: prodId, qty: qty })
+                            });
+
+                            if (window.FreshRootVoice) window.FreshRootVoice.refreshCartBadge();
+                            alert(`Added ${qty} kg ${title} to your cart!`);
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    };
+                }
+            });
+        });
+    </script>
+    <script src="voice_widget.js"></script>
 </body>
 
 </html>

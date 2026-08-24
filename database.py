@@ -144,14 +144,41 @@ class Database:
     def get_product_by_name(self, name):
         if not name:
             return None
+        name_clean = name.strip().lower()
+        # Handle plurals e.g. bananas -> banana, potatoes -> potato
+        stem = name_clean[:-2] if name_clean.endswith('es') else (name_clean[:-1] if name_clean.endswith('s') else name_clean)
+        
         with self.get_connection() as conn:
             cursor = conn.cursor()
+            # 1. Exact match on product_type or singular/plural
             cursor.execute(
-                "SELECT * FROM products WHERE LOWER(product_type) LIKE ? OR LOWER(product_title) LIKE ? LIMIT 1",
-                (f"%{name.lower()}%", f"%{name.lower()}%")
+                "SELECT * FROM products WHERE LOWER(product_type) = ? OR LOWER(product_type) = ? OR LOWER(product_type) = ? LIMIT 1",
+                (name_clean, stem, f"{stem}s")
             )
             row = cursor.fetchone()
-            return dict(row) if row else None
+            if row:
+                return dict(row)
+
+            # 2. Match as whole word in product_title
+            cursor.execute(
+                "SELECT * FROM products WHERE LOWER(product_title) LIKE ? OR LOWER(product_title) LIKE ? LIMIT 1",
+                (f"% {name_clean}%", f"{name_clean}%")
+            )
+            row = cursor.fetchone()
+            if row:
+                return dict(row)
+
+            # 3. Controlled prefix match (minimum 3 characters)
+            if len(stem) >= 3:
+                cursor.execute(
+                    "SELECT * FROM products WHERE LOWER(product_type) LIKE ? LIMIT 1",
+                    (f"{stem}%",)
+                )
+                row = cursor.fetchone()
+                if row:
+                    return dict(row)
+
+            return None
 
     # Shopping List Methods
     def get_shopping_list(self):
@@ -229,6 +256,31 @@ class Database:
                 )
             conn.commit()
             return True
+
+    def add_to_cart_by_name(self, name, qty=1, phone=8169193101):
+        if not name:
+            return False, None
+        product = self.get_product_by_name(name)
+        if not product:
+            return False, None
+
+        success = self.add_to_cart(product["product_id"], qty=qty, phone=phone)
+        return success, product
+
+    def remove_from_cart_by_name(self, name, phone=8169193101):
+        if not name:
+            return False
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                DELETE FROM cart 
+                WHERE phonenumber = ? AND product_id IN (
+                    SELECT product_id FROM products WHERE LOWER(product_type) LIKE ? OR LOWER(product_title) LIKE ?
+                )
+            """, (phone, f"%{name.lower()}%", f"%{name.lower()}%"))
+            deleted = cursor.rowcount
+            conn.commit()
+            return deleted > 0
 
     def remove_from_cart(self, cart_id):
         with self.get_connection() as conn:

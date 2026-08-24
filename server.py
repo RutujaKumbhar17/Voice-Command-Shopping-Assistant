@@ -26,7 +26,7 @@ if os.path.exists(PRICING_MODEL_PATH):
 
 @app.route("/")
 def index():
-    return send_from_directory("Frontend", "home.html")
+    return send_from_directory("Frontend", "login_signup.html")
 
 # -------------------------------------------------------------
 # Core Voice Command API Endpoint powered by MiniMax AI
@@ -40,12 +40,21 @@ def process_voice_command():
         return jsonify({"error": "Transcript is required"}), 400
 
     products = db.get_all_products()
+    current_cart = db.get_cart()
+    current_list = db.get_shopping_list()
 
-    # Step 1: Parse intent using MiniMax LLM
-    parsed = minimax.parse_voice_command(transcript, available_products=products)
+    # Step 1: Parse intent using MiniMax LLM or Local NLU Engine
+    parsed = minimax.parse_voice_command(
+        transcript,
+        available_products=products,
+        cart_data=current_cart,
+        list_data=current_list
+    )
     intent = parsed.get("intent", "general_query")
+    target = parsed.get("target", "both")
     item_name = parsed.get("item_name")
     quantity = parsed.get("quantity", 1)
+    unit = parsed.get("unit") or "kg"
     max_price = parsed.get("max_price")
     category = parsed.get("category")
 
@@ -55,37 +64,74 @@ def process_voice_command():
 
     # Step 2: Execute Intent Actions
     if intent == "add_item":
+        clean_name = item_name or transcript
+        product = db.get_product_by_name(clean_name)
+
+        if product:
+            db.add_to_cart(product["product_id"], qty=quantity)
+            db.add_to_shopping_list(
+                item_name=product["product_type"].title(),
+                quantity=quantity,
+                unit=unit,
+                category=product.get("product_cat", "General"),
+                price=product["product_price"]
+            )
+            response_text = f"Added {quantity} {unit} {product['product_type']} to your cart."
+            matched_products = [product]
+        else:
+            # Item is NOT in available farm catalog
+            available_samples = [p["product_type"] for p in products[:7]]
+            response_text = f"Sorry, '{clean_name}' is not available in our store. We have {', '.join(available_samples)}, and more."
+            matched_products = []
+
+    elif intent == "store_inventory":
+        sample_names = [p["product_type"] for p in products[:7]]
+        response_text = f"We have {len(products)} fresh produce items in store including {', '.join(sample_names)}, and more."
+
+    elif intent in ["get_cart_total", "view_cart"]:
+        cart_items = db.get_cart()
+        if cart_items:
+            total_price = sum(item["subtotal"] for item in cart_items)
+            item_summaries = [f"{item['qty']} {item['product_type']}" for item in cart_items]
+            response_text = f"Your cart has {len(cart_items)} items ({', '.join(item_summaries)}). Total cost: ₹{total_price}."
+            matched_products = cart_items
+        else:
+            response_text = "Your cart is currently empty. You can ask me to add apples, bananas, or potatoes."
+
+    elif intent == "view_shopping_list":
+        list_items = db.get_shopping_list()
+        if list_items:
+            items_str = ", ".join([f"{item['quantity']} {item['unit']} {item['item_name']}" for item in list_items])
+            response_text = f"Shopping list: {items_str}."
+        else:
+            response_text = "Your shopping list is empty."
+
+    elif intent == "get_price":
         if item_name:
             product = db.get_product_by_name(item_name)
-            price = product["product_price"] if product else 25
-            cat = product["product_cat"] if product else (category or "General")
-
-            # Add to DB shopping list and cart
-            db.add_to_shopping_list(
-                item_name=item_name.title(),
-                quantity=quantity,
-                unit=parsed.get("unit") or "items",
-                category=cat,
-                price=price
-            )
             if product:
-                db.add_to_cart(product_id=product["product_id"], qty=quantity)
-
-            response_text = f"Added {quantity} {item_name} to your shopping list and cart."
+                response_text = f"{product['product_type']} is ₹{product['product_price']} per {unit}."
+                matched_products = [product]
+            else:
+                response_text = f"Fresh {item_name} is around ₹30 to ₹60 per kg."
         else:
-            # Fallback: add raw item
-            db.add_to_shopping_list(item_name=transcript.title(), quantity=quantity, price=30)
-            response_text = f"Added {transcript} to your shopping list."
+            response_text = "Which product price would you like to check?"
 
     elif intent == "remove_item":
-        if item_name:
-            success = db.remove_from_shopping_list(item_name)
-            if success:
-                response_text = f"Removed {item_name} from your shopping list."
-            else:
-                response_text = f"Could not find {item_name} in your list."
-        else:
-            response_text = "Please specify which item to remove."
+        clean_name = item_name or transcript
+        db.remove_from_cart_by_name(clean_name)
+        db.remove_from_shopping_list(clean_name)
+        response_text = f"Removed {clean_name} from your cart."
+
+    elif intent == "clear_list":
+        db.clear_shopping_list()
+        response_text = "Shopping list cleared."
+
+    elif intent == "clear_cart":
+        with db.get_connection() as conn:
+            conn.cursor().execute("DELETE FROM cart WHERE phonenumber = 8169193101")
+            conn.commit()
+        response_text = "Cart cleared."
 
     elif intent in ["search_item", "filter_price"]:
         matched_products = db.get_all_products(
@@ -94,29 +140,32 @@ def process_voice_command():
             search_query=item_name or transcript
         )
         if matched_products:
-            response_text = f"Found {len(matched_products)} items matching your request."
+            response_text = f"Found {len(matched_products)} items matching '{item_name or transcript}'."
         else:
-            # If search yields empty, fallback search by query
             matched_products = db.get_all_products(search_query=item_name or "")
             if matched_products:
-                response_text = f"Here are items related to {item_name}."
+                response_text = f"Here are items related to {item_name or transcript}."
             else:
-                response_text = "Sorry, no products matched your search parameters."
+                response_text = "No produce matched your search."
 
     elif intent == "get_suggestions":
         history = [item["item_name"] for item in db.get_shopping_list()]
         suggestions = minimax.generate_smart_suggestions(history_items=history)
-        response_text = "Here are smart recommendations, seasonal picks, and substitutes for you."
+        response_text = "Here are fresh recommendations for you."
 
-    elif intent == "clear_list":
-        db.clear_shopping_list()
-        response_text = "Cleared all items from your shopping list."
+    elif intent == "checkout":
+        cart_items = db.get_cart()
+        total_price = sum(item["subtotal"] for item in cart_items)
+        if cart_items:
+            response_text = f"Your order total is ₹{total_price}. Proceeding to checkout."
+        else:
+            response_text = "Your cart is empty."
 
-    # Step 3: Generate Speech Audio using MiniMax TTS
+    # Step 3: Generate Speech Audio using MiniMax TTS (Soft Female Voice)
     tts_result = minimax.generate_speech_audio(response_text)
     audio_b64 = tts_result.get("audio_b64") if tts_result and tts_result.get("status") == "success" else None
 
-    # Retrieve current state
+    # Retrieve current updated state
     shopping_list = db.get_shopping_list()
     cart = db.get_cart()
 

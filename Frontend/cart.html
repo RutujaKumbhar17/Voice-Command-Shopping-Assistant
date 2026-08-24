@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="voice_widget.css">
     <script src="https://kit.fontawesome.com/d9f55f49c0.js" crossorigin="anonymous"></script>
     <style>
         body {
@@ -145,64 +146,92 @@
     </div>
 
     <script>
-        const cart = [
-            { name: "Beetroot (Loose)", quantity: 2, price: 43 },
-            { name: "Capsicum - Green", quantity: 1, price: 60 },
-            { name: "Ladies' Fingers", quantity: 3, price: 50 }
-        ];
+        function getApiUrl(path) {
+            if (window.location.protocol === 'file:' || (window.location.port !== '5000' && window.location.port !== '')) {
+                return 'http://127.0.0.1:5000' + path;
+            }
+            return path;
+        }
 
-        function loadCart() {
+        async function loadCart() {
             const cartItems = document.getElementById("cart-items").querySelector("tbody");
             const totalPriceElement = document.getElementById("total-price");
             const emptyCartMessage = document.getElementById("empty-cart-message");
+            const proceedBtn = document.getElementById("proceed-button");
 
-            cartItems.innerHTML = ""; // Clear existing items
-            let total = 0;
+            try {
+                const res = await fetch(getApiUrl('/api/cart'));
+                const data = await res.json();
+                const cart = data.cart || [];
+                const total = data.total || 0;
 
-            if (cart.length === 0) {
-                emptyCartMessage.style.display = "block";
-                totalPriceElement.style.display = "none";
-                document.getElementById("proceed-button").style.display = "none";
-                return;
+                cartItems.innerHTML = "";
+
+                if (cart.length === 0) {
+                    emptyCartMessage.style.display = "block";
+                    totalPriceElement.style.display = "none";
+                    if (proceedBtn) proceedBtn.style.display = "none";
+                    return;
+                }
+
+                emptyCartMessage.style.display = "none";
+                totalPriceElement.style.display = "block";
+                if (proceedBtn) proceedBtn.style.display = "inline-block";
+
+                cart.forEach((item) => {
+                    const title = item.product_title || item.product_type || item.name || "Produce Item";
+                    const qty = item.qty || item.quantity || 1;
+                    const price = item.product_price || item.price || 0;
+                    const subtotal = item.subtotal || (qty * price);
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td style="display: flex; align-items: center; gap: 10px;">
+                            <img src="./image/${item.product_image || 'capsicum.jpg'}" onerror="this.src='./image/background1.jpg'" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px;" alt="${title}">
+                            <span>${title}</span>
+                        </td>
+                        <td>${qty}</td>
+                        <td>₹${price}</td>
+                        <td>₹${subtotal}</td>
+                        <td><button onclick="removeItem(${item.id})" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Remove</button></td>
+                    `;
+                    cartItems.appendChild(row);
+                });
+
+                totalPriceElement.textContent = `Total: ₹${total}`;
+            } catch (err) {
+                console.error("Failed to load cart:", err);
             }
-
-            emptyCartMessage.style.display = "none";
-            totalPriceElement.style.display = "block";
-            document.getElementById("proceed-button").style.display = "inline-block";
-
-            cart.forEach((item, index) => {
-                const subtotal = item.quantity * item.price;
-                total += subtotal;
-
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${item.name}</td>
-                    <td>${item.quantity}</td>
-                    <td>₹${item.price}</td>
-                    <td>₹${subtotal}</td>
-                    <td><button onclick="removeItem(${index})">Remove</button></td>
-                `;
-                cartItems.appendChild(row);
-            });
-
-            totalPriceElement.textContent = `Total: ₹${total}`;
         }
 
-        function removeItem(index) {
-            cart.splice(index, 1);
-            loadCart();
+        async function removeItem(cartId) {
+            try {
+                await fetch(getApiUrl(`/api/cart?id=${cartId}`), { method: 'DELETE' });
+                await loadCart();
+                if (typeof window.FreshRootVoice !== 'undefined') {
+                    window.FreshRootVoice.refreshCartBadge();
+                }
+            } catch (err) {
+                console.error("Failed to remove item:", err);
+            }
         }
 
         function proceedToBuy() {
-            if (cart.length === 0) {
-                alert("Your cart is empty!");
-                return;
-            }
-            // Add the functionality here for proceeding to the checkout page
-            alert("Proceeding to checkout...");
+            window.location.href = "payment.html";
         }
 
+        window.loadCart = loadCart;
+        window.removeItem = removeItem;
+        window.addEventListener('DOMContentLoaded', loadCart);
+        window.addEventListener('cartUpdated', loadCart);
+        window.addEventListener('focus', loadCart);
+        window.addEventListener('storage', loadCart);
         loadCart();
     </script>
+    <!-- Floating Voice Assistant Action Button -->
+    <button class="floating-ai-btn" onclick="FreshRootVoice.activate()" title="Activate AI Voice Assistant">
+        <i class="fa-solid fa-robot"></i>
+    </button>
+    <script src="voice_widget.js"></script>
 </body>
 </html>

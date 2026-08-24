@@ -5,16 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100vh;
-            background-image: linear-gradient(0deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url("./image/pic2.jpg");
+            background-image: linear-gradient(0deg, rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url("./image/background1.jpg");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .container {
@@ -22,38 +25,36 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 50px 60px;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
             text-align: center;
-        }
-
-        .roles-wrapper {
-            display: flex;
-            gap: 80px;
-            align-items: center;
-        }
-
-        .role {
-            text-align: center;
-        }
-
-        .role h3 {
-            font-size: 2rem; /* Increased size for USER and FARMER text */
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #333;
+            max-width: 420px;
+            width: 90%;
         }
 
         .logo {
-            font-size: 3.5rem; /* Logo size */
-            font-weight: bold;
-            color: #6a4a3c;
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ffffff;
             display: flex;
             align-items: center;
-            gap: 15px;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
         }
 
         .logo1 {
-            color: green;
+            color: #10b981;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 15px;
+            margin-bottom: 35px;
         }
 
         .role-content {
@@ -61,75 +62,89 @@
             flex-direction: column;
             align-items: center;
             gap: 15px;
+            width: 100%;
         }
 
         .role i {
-            font-size: 6rem; /* User and farmer icons size */
-            color: black;
+            font-size: 4.5rem;
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            margin-bottom: 10px;
         }
 
         .buttons {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            margin-top: 20px;
+            gap: 15px;
+            width: 100%;
         }
 
         .buttons a {
             text-decoration: none;
-            padding: 14px 25px; /* Button size */
-            background-color: #6a4a3c;
+            padding: 14px 20px;
+            background: #107d09;
             color: white;
-            border-radius: 6px;
-            font-size: 1.2rem; /* Button font size */
-            font-weight: bold;
-            transition: background-color 0.3s;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            display: block;
+            box-shadow: 0 4px 15px rgba(16, 125, 9, 0.3);
         }
 
         .buttons a:hover {
-            background-color: #f5f5f5;
-            color: #6a4a3c;
+            background: #0d6307;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 125, 9, 0.5);
+        }
+
+        .buttons a.signup-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #e2e8f0;
+            box-shadow: none;
+        }
+
+        .buttons a.signup-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #10b981;
+            color: #10b981;
         }
     </style>
-    <title>FarmPure</title>
+    <title>FreshRoot - Welcome</title>
     <script src="https://kit.fontawesome.com/d9f55f49c0.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="voice_widget.css">
 </head>
 <body>
     <div class="container">
-        <div class="roles-wrapper">
-
-            <!-- User Section -->
-            <div class="role-content">
-                <h1>USER</h1>
-                <div class="role">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="buttons">
-                    <a href="user_login.html" title="User Login">LOGIN</a>
-                    <a href="user_signup.html" title="User Signup">SIGN UP</a>
-                </div>
+        <!-- FreshRoot Logo -->
+        <div class="logo">
+            <div class="logo1">
+                <i class="fa-solid fa-leaf"></i>
             </div>
+            FreshRoot
+        </div>
+        <div class="subtitle">Farm Fresh Produce to Your Kitchen</div>
 
-            <!-- FarmPure Logo -->
-            <div class="logo">
-                <div class="logo1">
-                    <i class="fa-solid fa-leaf"></i>
-                </div>
-                FarmPure
+        <!-- User Section -->
+        <div class="role-content">
+            <div class="role">
+                <i class="fa-solid fa-user"></i>
             </div>
-
-            <!-- Farmer Section -->
-            <div class="role-content">
-                <h1>FARMER</h1>
-                <div class="role">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="buttons">
-                    <a href="farmer_login.html" title="Farmer Login">LOGIN</a>
-                    <a href="farmer_signup.html" title="Farmer Signup">SIGN UP</a>
-                </div>
+            <div class="buttons">
+                <a href="user_login.html" title="User Login">LOGIN</a>
+                <a href="user_signup.html" class="signup-btn" title="User Signup">SIGN UP</a>
             </div>
         </div>
     </div>
+    <script src="voice_widget.js"></script>
 </body>
 </html>
