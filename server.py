@@ -470,6 +470,13 @@ def text_to_speech():
     tts_res = minimax.generate_speech_audio(text)
     return jsonify(tts_res)
 
+@app.route("/<path:path>")
+def serve_frontend_files(path):
+    file_path = os.path.join(os.path.dirname(__file__), "Frontend", path)
+    if os.path.exists(file_path):
+        return send_from_directory("Frontend", path)
+    return send_from_directory("Frontend", "login_signup.html")
+
 if __name__ == "__main__":
     print("[Server] FreshRoot Voice Assistant Server running on http://127.0.0.1:5000")
     app.run(host="0.0.0.0", port=5000, debug=True)
